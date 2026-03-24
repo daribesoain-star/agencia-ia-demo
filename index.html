@@ -3,13 +3,17 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Agencia IA â Marketing Intelligence Platform</title>
+<title>Agencia IA — Marketing Intelligence Platform</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
 <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{scrollbar-width:thin;scrollbar-color:#374151 transparent}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#374151;border-radius:3px}
@@ -17,15 +21,544 @@
 input[type=range]{-webkit-appearance:none;background:transparent;cursor:pointer}
 input[type=range]::-webkit-slider-runnable-track{height:6px;background:#1f2937;border-radius:3px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;background:#8b5cf6;height:16px;width:16px;border-radius:50%;border:2px solid #0a0b0f}
+/* Anti-copy protections */
+body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+img{pointer-events:none}
+/* Watermark overlay */
+.watermark-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:0.03}
+.watermark-text{font-size:14px;color:#fff;transform:rotate(-30deg);white-space:nowrap}
+/* Login styles */
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)}50%{box-shadow:0 0 40px rgba(139,92,246,0.6)}}
+.glow-pulse{animation:pulse-glow 2s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.float-anim{animation:float 3s ease-in-out infinite}
+@keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.gradient-bg{background:linear-gradient(-45deg,#0a0b0f,#1a1040,#0f172a,#0a0b0f);background-size:400% 400%;animation:gradient-shift 8s ease infinite}
 </style>
 <script>tailwind.config={theme:{extend:{}}}</script>
 </head>
 <body class="bg-[#0a0b0f]">
 <div id="root"></div>
+
+<!-- ============================================== -->
+<!-- FIREBASE CONFIG - REEMPLAZAR CON TUS VALORES   -->
+<!-- ============================================== -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBfw18F2OEd3FpLVMA9RfyRP4ipcoj_BXw",
+  authDomain: "agencia-ia-platform.firebaseapp.com",
+  projectId: "agencia-ia-platform",
+  storageBucket: "agencia-ia-platform.firebasestorage.app",
+  messagingSenderId: "299468500405",
+  appId: "1:299468500405:web:f1462cd903e447d1c4bdfc"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script>
+
+<!-- ============================================== -->
+<!-- ADVANCED ANTI-COPY PROTECTION                  -->
+<!-- ============================================== -->
+<script>
+// 1. Disable right-click
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2. Disable keyboard shortcuts (Ctrl+C, Ctrl+U, Ctrl+S, F12, Ctrl+Shift+I)
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || e.key === 'a')) e.preventDefault();
+  if (e.key === 'F12') e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) e.preventDefault();
+});
+
+// 3. DevTools detection
+let devToolsOpen = false;
+const threshold = 160;
+const checkDevTools = () => {
+  const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+  const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+  if (widthThreshold || heightThreshold) {
+    if (!devToolsOpen) {
+      devToolsOpen = true;
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0b0f;color:#ef4444;font-family:monospace;font-size:24px;text-align:center;padding:20px">⚠️ Acceso no autorizado detectado.<br>Las herramientas de desarrollo están bloqueadas.<br>Cierra DevTools para continuar.</div>';
+    }
+  } else {
+    if (devToolsOpen) {
+      devToolsOpen = false;
+      location.reload();
+    }
+  }
+};
+setInterval(checkDevTools, 1000);
+
+// 4. Disable drag
+document.addEventListener('dragstart', e => e.preventDefault());
+
+// 5. Disable print
+window.addEventListener('beforeprint', () => {
+  document.body.style.display = 'none';
+});
+window.addEventListener('afterprint', () => {
+  document.body.style.display = '';
+});
+
+// 6. Console warning
+console.log('%c⚠️ ALTO', 'color:red;font-size:40px;font-weight:bold');
+console.log('%cEste es un sistema protegido. El acceso no autorizado está prohibido.', 'color:red;font-size:16px');
+</script>
+
 <script type="text/babel">
 const {useState,useEffect,useCallback}=React;
 const {LineChart,Line,BarChart,Bar,AreaChart,Area,PieChart,Pie,Cell,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Legend,RadarChart,Radar,PolarGrid,PolarAngleAxis,PolarRadiusAxis}=Recharts;
 
+// ============================================
+// WATERMARK COMPONENT (dynamic per-user)
+// ============================================
+function Watermark({userEmail}) {
+  const rows = 20;
+  const cols = 8;
+  return (
+    <div className="watermark-overlay">
+      <div style={{display:'flex',flexDirection:'column',gap:'60px',padding:'20px'}}>
+        {Array.from({length:rows}).map((_,r) => (
+          <div key={r} style={{display:'flex',gap:'80px',marginLeft: r%2 ? '100px' : '0'}}>
+            {Array.from({length:cols}).map((_,c) => (
+              <span key={c} className="watermark-text">{userEmail} • {new Date().toLocaleDateString('es-CL')}</span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// LOGIN COMPONENT
+// ============================================
+function LoginPage({onLogin}) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const userCred = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCred.user;
+      // Check if email is verified
+      if (!user.emailVerified) {
+        setError('Tu email no ha sido verificado. Revisa tu bandeja de entrada.');
+        await auth.signOut();
+        setLoading(false);
+        return;
+      }
+      // Check user role in Firestore
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        setError('Tu cuenta no ha sido activada por un administrador.');
+        await auth.signOut();
+        setLoading(false);
+        return;
+      }
+      const userData = userDoc.data();
+      if (userData.status !== 'active') {
+        setError('Tu cuenta está pendiente de activación por un administrador.');
+        await auth.signOut();
+        setLoading(false);
+        return;
+      }
+      onLogin(user, userData);
+    } catch (err) {
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setError('Email o contraseña incorrectos.');
+      } else if (err.code === 'auth/too-many-requests') {
+        setError('Demasiados intentos. Intenta de nuevo en unos minutos.');
+      } else {
+        setError('Error de conexión. Intenta de nuevo.');
+      }
+    }
+    setLoading(false);
+  };
+
+  const handleResetPassword = async () => {
+    if (!email) { setError('Ingresa tu email primero'); return; }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      setResetSent(true);
+      setError('');
+    } catch (err) {
+      setError('No se pudo enviar el email de recuperación.');
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        setError('Tu cuenta no ha sido registrada por un administrador. Contacta al admin.');
+        await auth.signOut();
+        setLoading(false);
+        return;
+      }
+      const userData = userDoc.data();
+      if (userData.status !== 'active') {
+        setError('Tu cuenta está pendiente de activación.');
+        await auth.signOut();
+        setLoading(false);
+        return;
+      }
+      onLogin(user, userData);
+    } catch (err) {
+      setError('Error al iniciar sesión con Google.');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="gradient-bg min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="float-anim inline-block">
+            <div className="w-20 h-20 bg-gradient-to-br from-violet-600 to-purple-800 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-violet-500/30">
+              🤖
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Agencia IA</h1>
+          <p className="text-gray-400">Marketing Intelligence Platform</p>
+        </div>
+
+        {/* Login Card */}
+        <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-800/60 rounded-2xl p-8 shadow-2xl">
+          <h2 className="text-xl font-semibold text-white mb-6 text-center">Iniciar Sesión</h2>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          {resetSent && (
+            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4 text-green-400 text-sm">
+              ✅ Email de recuperación enviado. Revisa tu bandeja.
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                placeholder="tu@email.com"
+                required
+                style={{userSelect:'text',WebkitUserSelect:'text'}}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contraseña</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                placeholder="••••••••"
+                required
+                style={{userSelect:'text',WebkitUserSelect:'text'}}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-500 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 glow-pulse"
+            >
+              {loading ? '⏳ Verificando...' : '🔐 Iniciar Sesión'}
+            </button>
+          </form>
+
+          <div className="mt-4 flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-800"></div>
+            <span className="text-gray-500 text-sm">o</span>
+            <div className="flex-1 h-px bg-gray-800"></div>
+          </div>
+
+          <button
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full mt-4 bg-gray-800/60 border border-gray-700 hover:border-gray-600 text-white py-3 rounded-lg transition flex items-center justify-center gap-2"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continuar con Google
+          </button>
+
+          <div className="mt-4 text-center">
+            <button onClick={handleResetPassword} className="text-violet-400 hover:text-violet-300 text-sm transition">
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+
+          <div className="mt-6 bg-gray-800/40 rounded-lg p-3 text-center">
+            <p className="text-gray-500 text-xs">🔒 Acceso restringido. Solo usuarios autorizados por el administrador pueden ingresar.</p>
+          </div>
+        </div>
+
+        <p className="text-center text-gray-600 text-xs mt-6">© 2026 Agencia IA — Marketing Intelligence Platform</p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// ADMIN PANEL - USER MANAGEMENT
+// ============================================
+function AdminPanel({currentUser, userData, onBack}) {
+  const [users, setUsers] = useState([]);
+  const [newEmail, setNewEmail] = useState('');
+  const [newRole, setNewRole] = useState('cliente');
+  const [newName, setNewName] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      const snapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
+      const userList = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+      setUsers(userList);
+    } catch(e) { console.error(e); }
+    setLoading(false);
+  };
+
+  const createUser = async (e) => {
+    e.preventDefault();
+    setCreating(true);
+    setMessage('');
+    try {
+      // Create user in Firebase Auth with a temp password
+      const tempPassword = 'Temp' + Math.random().toString(36).slice(2,10) + '!1';
+      const userCred = await auth.createUserWithEmailAndPassword(newEmail, tempPassword);
+      const newUser = userCred.user;
+
+      // Send email verification
+      await newUser.sendEmailVerification();
+
+      // Send password reset so user sets their own password
+      await auth.sendPasswordResetEmail(newEmail);
+
+      // Create user document in Firestore
+      await db.collection('users').doc(newUser.uid).set({
+        email: newEmail,
+        name: newName,
+        role: newRole,
+        status: 'active',
+        createdBy: currentUser.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastLogin: null
+      });
+
+      // Re-authenticate as admin (creating a user signs in as that user)
+      // We need to sign back in as the admin
+      setMessage(`✅ Usuario ${newEmail} creado. Se envió email de verificación y link para crear contraseña.`);
+      setNewEmail('');
+      setNewName('');
+      setNewRole('cliente');
+
+      // Note: After createUserWithEmailAndPassword, the new user is signed in.
+      // The admin needs to re-login. We'll handle this by reloading.
+      setTimeout(() => {
+        setMessage('⚠️ Firebase cambió la sesión al nuevo usuario. Debes volver a iniciar sesión como admin.');
+      }, 2000);
+
+      loadUsers();
+    } catch (err) {
+      if (err.code === 'auth/email-already-in-use') {
+        setMessage('❌ Ese email ya está registrado.');
+      } else {
+        setMessage('❌ Error: ' + err.message);
+      }
+    }
+    setCreating(false);
+  };
+
+  const toggleUserStatus = async (userId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+    await db.collection('users').doc(userId).update({status: newStatus});
+    loadUsers();
+  };
+
+  const deleteUser = async (userId, email) => {
+    if (!confirm(`¿Eliminar usuario ${email}? Esta acción no se puede deshacer.`)) return;
+    await db.collection('users').doc(userId).delete();
+    loadUsers();
+  };
+
+  const roleColors = {
+    admin: 'bg-red-500/20 text-red-400 border-red-500/30',
+    vendedor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    cliente: 'bg-green-500/20 text-green-400 border-green-500/30',
+    soporte: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0b0f] p-6">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">🛡️ Panel de Administración</h1>
+            <p className="text-gray-400 mt-1">Gestión de usuarios y accesos</p>
+          </div>
+          <button onClick={onBack} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition">
+            ← Volver al Dashboard
+          </button>
+        </div>
+
+        {/* Create User Form */}
+        <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">➕ Crear Nuevo Usuario</h2>
+          {message && (
+            <div className={`rounded-lg p-3 mb-4 text-sm ${message.startsWith('✅') ? 'bg-green-500/10 text-green-400 border border-green-500/30' : message.startsWith('⚠️') ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}>
+              {message}
+            </div>
+          )}
+          <form onSubmit={createUser} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Nombre</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                className="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500"
+                placeholder="Juan Pérez"
+                required
+                style={{userSelect:'text',WebkitUserSelect:'text'}}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Email</label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={e => setNewEmail(e.target.value)}
+                className="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500"
+                placeholder="usuario@email.com"
+                required
+                style={{userSelect:'text',WebkitUserSelect:'text'}}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Rol</label>
+              <select
+                value={newRole}
+                onChange={e => setNewRole(e.target.value)}
+                className="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500"
+              >
+                <option value="cliente">👤 Cliente</option>
+                <option value="vendedor">💼 Vendedor</option>
+                <option value="soporte">🎧 Soporte</option>
+                <option value="admin">🛡️ Admin</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                disabled={creating}
+                className="w-full bg-violet-600 hover:bg-violet-500 text-white py-2 rounded-lg transition text-sm font-medium disabled:opacity-50"
+              >
+                {creating ? '⏳ Creando...' : '✅ Crear Usuario'}
+              </button>
+            </div>
+          </form>
+          <p className="text-gray-500 text-xs mt-3">El usuario recibirá un email de verificación y un link para crear su contraseña.</p>
+        </div>
+
+        {/* Users Table */}
+        <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-gray-800/60">
+            <h2 className="text-lg font-semibold text-white">👥 Usuarios Registrados ({users.length})</h2>
+          </div>
+          {loading ? (
+            <div className="p-8 text-center text-gray-400">Cargando usuarios...</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-800/60 text-gray-400 text-sm">
+                    <th className="text-left p-3">Usuario</th>
+                    <th className="text-left p-3">Rol</th>
+                    <th className="text-left p-3">Estado</th>
+                    <th className="text-left p-3">Creado</th>
+                    <th className="text-right p-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id} className="border-b border-gray-800/30 hover:bg-gray-800/20">
+                      <td className="p-3">
+                        <div className="text-white text-sm font-medium">{u.name || '—'}</div>
+                        <div className="text-gray-500 text-xs">{u.email}</div>
+                      </td>
+                      <td className="p-3">
+                        <span className={`text-xs px-2 py-1 rounded-full border ${roleColors[u.role] || 'bg-gray-500/20 text-gray-400'}`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <span className={`text-xs ${u.status === 'active' ? 'text-green-400' : u.status === 'pending' ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {u.status === 'active' ? '🟢 Activo' : u.status === 'pending' ? '🟡 Pendiente' : '🔴 Suspendido'}
+                        </span>
+                      </td>
+                      <td className="p-3 text-gray-400 text-xs">
+                        {u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString('es-CL') : '—'}
+                      </td>
+                      <td className="p-3 text-right">
+                        <button
+                          onClick={() => toggleUserStatus(u.id, u.status)}
+                          className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2 py-1 rounded mr-1 transition"
+                        >
+                          {u.status === 'active' ? '⏸ Suspender' : '▶ Activar'}
+                        </button>
+                        <button
+                          onClick={() => deleteUser(u.id, u.email)}
+                          className="text-xs bg-red-900/30 hover:bg-red-900/50 text-red-400 px-2 py-1 rounded transition"
+                        >
+                          🗑
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// DASHBOARD DATA (same as original)
+// ============================================
 const empresas=[
 {id:1,name:"Agrocomercial",domain:"agrocomercial.cl",logo:"\u{1F33F}",industry:"Agro/Retail",plan:"Pro",agentStatus:"working",connections:7},
 {id:2,name:"Factur-AI",domain:"factur-ai.cl",logo:"\u{1F4C4}",industry:"SaaS/Fintech",plan:"Pro",agentStatus:"working",connections:5},
@@ -62,15 +595,6 @@ const channels=[
 {name:"MercadoLibre",icon:"\u{1F7E1}",spend:0,revenue:480000,roas:"\u221E",status:"listing",trend:"+5%",leads:28,color:"#FFE600"}
 ];
 
-const visitorIntel=[
-{segment:"Visitantes nuevos",count:18200,pct:64,action:"Popup 10% descuento primera compra",color:"#3b82f6"},
-{segment:"Vieron producto 2+ veces",count:4800,pct:17,action:"Email con producto visto + descuento 5%",color:"#8b5cf6"},
-{segment:"Carrito abandonado",count:890,pct:3,action:"Flow: Email 1h \u2192 WhatsApp 4h \u2192 Retargeting 24h",color:"#f59e0b"},
-{segment:"Compradores recientes",count:1200,pct:4,action:"Cross-sell autom\u00E1tico d\u00EDa 3 post-compra",color:"#10b981"},
-{segment:"Inactivos 30+ d\u00EDas",count:2100,pct:7,action:"Campa\u00F1a win-back con oferta especial",color:"#ef4444"},
-{segment:"VIP (3+ compras)",count:380,pct:1,action:"Programa lealtad + acceso anticipado",color:"#06b6d4"}
-];
-
 const agentActivity=[
 {time:"Ahora",icon:"\u26A1",action:"Redistribuyendo $85K de campa\u00F1a baja \u2192 Riego Tecnificado (ROAS 4.5x)",status:"executing",impact:"+$120K revenue est."},
 {time:"14:32",icon:"\u{1F3A8}",action:"Gener\u00F3 4 variantes de ad para Fertilizante Premium \u2014 A/B test en Meta",status:"done",impact:"Testing 4 creativos"},
@@ -79,8 +603,7 @@ const agentActivity=[
 {time:"12:48",icon:"\u{1F4E7}",action:"Envi\u00F3 flow carrito abandonado a 23 usuarios",status:"done",impact:"Revenue esp: $247K"},
 {time:"12:00",icon:"\u{1F4F1}",action:"Public\u00F3 carousel Tips de riego oto\u00F1o en IG",status:"done",impact:"Alcance: 4,500"},
 {time:"11:30",icon:"\u26A1",action:"Paus\u00F3 ad set Herramientas Jard\u00EDn \u2014 CPA $1,200 > umbral $800",status:"done",impact:"Ahorro: $45K/sem"},
-{time:"09:00",icon:"\u{1F4CB}",action:"Reporte diario WhatsApp: Revenue $650K | ROAS 3.9x | 18 pedidos",status:"done",impact:"Reporte entregado"},
-{time:"08:30",icon:"\u{1F504}",action:"Sync completo: WooCommerce, Mailchimp, Meta, Google",status:"done",impact:"Datos actualizados"}
+{time:"09:00",icon:"\u{1F4CB}",action:"Reporte diario WhatsApp: Revenue $650K | ROAS 3.9x | 18 pedidos",status:"done",impact:"Reporte entregado"}
 ];
 
 const campaignGoals=[
@@ -102,299 +625,340 @@ const pctChg=(c,p)=>{const d=((c-p)/p*100).toFixed(1);return{value:d,pos:d>=0}};
 function Stat({label,value,prev,format,icon}){
 const ch=prev?pctChg(typeof value==="number"?value:parseFloat(value),typeof prev==="number"?prev:parseFloat(prev)):null;
 const dv=format==="money"?fmt(value):format==="pct"?`${value}%`:format==="x"?`${value}x`:value?.toLocaleString?.("es-CL")||value;
-return(<div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 hover:border-gray-700/60 transition-all group">
-<div className="flex items-center justify-between mb-1"><span className="text-gray-500 text-[11px] font-medium uppercase tracking-wider">{label}</span>{icon&&<span className="text-base opacity-60 group-hover:opacity-100">{icon}</span>}</div>
-<div className="text-white font-bold text-xl">{dv}</div>
-{ch&&<div className="flex items-center gap-1.5 mt-1"><span className={`text-xs font-bold ${ch.pos?"text-emerald-400":"text-red-400"}`}>{ch.pos?"\u2191":"\u2193"} {Math.abs(ch.value)}%</span><span className="text-gray-600 text-[10px]">vs mes anterior</span></div>}
-</div>)}
+return(<div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 hover:border-violet-500/30 transition">
+<div className="flex justify-between items-start"><span className="text-gray-400 text-xs uppercase tracking-wider">{label}</span><span className="text-lg">{icon}</span></div>
+<div className="text-2xl font-bold text-white mt-1">{dv}</div>
+{ch&&<div className={`text-xs mt-1 ${ch.pos?"text-green-400":"text-red-400"}`}>{ch.pos?"\u2191":"\u2193"} {Math.abs(ch.value)}% vs mes anterior</div>}
+</div>);
+}
 
-function Badge({status}){
-const s={working:"bg-emerald-500/15 text-emerald-400 border-emerald-500/30",configuring:"bg-amber-500/15 text-amber-400 border-amber-500/30",executing:"bg-blue-500/15 text-blue-400 border-blue-500/30",done:"bg-emerald-500/10 text-emerald-500/80 border-emerald-500/20",pending:"bg-amber-500/15 text-amber-300 border-amber-500/30 animate-pulse"};
-const l={working:"Agente Trabajando",configuring:"Configurando",executing:"Ejecutando...",done:"Completado",pending:"Esperando tu OK"};
-return <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${s[status]||""}`}>{l[status]||status}</span>}
+// ============================================
+// MAIN DASHBOARD COMPONENT
+// ============================================
+function Dashboard({user, userData, onLogout, onAdmin}) {
+  const [activeView,setActiveView]=useState("dashboard");
+  const [selectedEmpresa,setSelectedEmpresa]=useState(empresas[0]);
+  const [selectedGoal,setSelectedGoal]=useState(0);
+  const [showEmpresaMenu,setShowEmpresaMenu]=useState(false);
+  const [agentAggressiveness,setAgentAggressiveness]=useState(70);
+  const [agentAutonomy,setAgentAutonomy]=useState(85);
 
-function App(){
-const[activeEmp,setActiveEmp]=useState(empresas[0]);
-const[view,setView]=useState("dashboard");
-const[showSel,setShowSel]=useState(false);
-const[agent,setAgent]=useState({autonomy:65,creativity:70,budget:40,speed:80});
-const[goal,setGoal]=useState(0);
-const[expAgent,setExpAgent]=useState(null);
+  const views=[
+    {id:"dashboard",label:"Dashboard",icon:"\u{1F4CA}"},
+    {id:"agent",label:"Agente IA",icon:"\u{1F916}"},
+    {id:"channels",label:"Canales",icon:"\u{1F4E1}"},
+    {id:"visitors",label:"Visitantes",icon:"\u{1F465}"},
+    {id:"campaigns",label:"Campa\u00F1as",icon:"\u{1F3AF}"},
+    {id:"content",label:"Contenido",icon:"\u{1F4DD}"}
+  ];
 
-const views=[{id:"dashboard",label:"Dashboard",icon:"\u{1F4CA}"},{id:"agent",label:"Agente IA",icon:"\u{1F916}"},{id:"channels",label:"Canales",icon:"\u{1F4E1}"},{id:"visitors",label:"Visitantes",icon:"\u{1F441}"},{id:"campaigns",label:"Campa\u00F1as",icon:"\u{1F3AF}"},{id:"content",label:"Contenido",icon:"\u{1F4F1}"}];
+  const channelIcons = ["\u{1F4CA}","\u{1F4F1}","\u{1F50D}","\u{1F4E7}","\u{1F6D2}","\u{1F3B5}","\u{1F7E1}"];
 
-return(<div className="min-h-screen bg-[#0a0b0f] text-gray-100 flex">
-{/* SIDEBAR */}
-<aside className="w-64 bg-[#0d0e14] border-r border-gray-800/50 flex flex-col min-h-screen sticky top-0">
-<div className="p-4 border-b border-gray-800/50">
-<div className="flex items-center gap-2.5">
-<div className="w-9 h-9 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-cyan-400 rounded-xl flex items-center justify-center"><span className="text-white font-black text-sm">IA</span></div>
-<div><h1 className="text-white font-bold text-sm leading-tight">Agencia IA</h1><span className="text-gray-600 text-[10px]">Marketing Intelligence Platform</span></div>
-</div></div>
+  return (
+    <div className="flex h-screen bg-[#0a0b0f] text-white overflow-hidden">
+      {/* Dynamic watermark */}
+      <Watermark userEmail={user.email} />
 
-<div className="p-3 border-b border-gray-800/50">
-<button onClick={()=>setShowSel(!showSel)} className="w-full flex items-center gap-2.5 p-2.5 bg-gray-800/40 hover:bg-gray-800/70 rounded-lg transition-colors">
-<span className="text-xl">{activeEmp.logo}</span>
-<div className="flex-1 text-left"><div className="text-white text-sm font-semibold">{activeEmp.name}</div><div className="text-gray-500 text-[10px]">{activeEmp.domain}</div></div>
-<span className="text-gray-600 text-xs">{"\u25BE"}</span>
-</button>
-{showSel&&<div className="mt-2 space-y-1 bg-gray-900 border border-gray-700 rounded-lg p-1.5 shadow-2xl">
-{empresas.map(e=><button key={e.id} onClick={()=>{setActiveEmp(e);setShowSel(false)}} className={`w-full flex items-center gap-2.5 p-2 rounded-lg transition-colors ${e.id===activeEmp.id?"bg-violet-500/20 border border-violet-500/30":"hover:bg-gray-800 border border-transparent"}`}>
-<span className="text-lg">{e.logo}</span><div className="flex-1 text-left"><div className="text-white text-xs font-medium">{e.name}</div><div className="text-gray-500 text-[10px]">{e.domain}</div></div><Badge status={e.agentStatus}/></button>)}
-<button className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-800 text-violet-400"><span className="w-6 h-6 bg-violet-500/20 rounded-lg flex items-center justify-center text-sm">+</span><span className="text-xs font-medium">Agregar empresa</span></button>
-</div>}
-</div>
+      {/* Sidebar */}
+      <div className="w-56 bg-gray-950/80 border-r border-gray-800/40 flex flex-col">
+        <div className="p-4 border-b border-gray-800/40">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-purple-800 rounded-lg flex items-center justify-center text-sm">IA</div>
+            <div><div className="font-semibold text-sm">Agencia IA</div><div className="text-[10px] text-gray-500">Marketing Intelligence Platform</div></div>
+          </div>
+        </div>
 
-<nav className="flex-1 p-3 space-y-0.5">
-{views.map(v=><button key={v.id} onClick={()=>setView(v.id)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${view===v.id?"bg-violet-500/15 text-violet-300 border border-violet-500/20 font-semibold":"text-gray-500 hover:text-gray-300 hover:bg-gray-800/40 border border-transparent"}`}><span className="text-base">{v.icon}</span>{v.label}</button>)}
-</nav>
+        {/* Empresa selector */}
+        <div className="p-3 border-b border-gray-800/40">
+          <button onClick={()=>setShowEmpresaMenu(!showEmpresaMenu)} className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-800/40 transition">
+            <span className="text-xl">{selectedEmpresa.logo}</span>
+            <div className="text-left flex-1">
+              <div className="text-sm font-medium">{selectedEmpresa.name}</div>
+              <div className="text-[10px] text-gray-500">{selectedEmpresa.domain}</div>
+            </div>
+            <span className="text-gray-500 text-xs">{showEmpresaMenu?"\u25B2":"\u25BC"}</span>
+          </button>
+          {showEmpresaMenu&&(
+            <div className="mt-1 space-y-1">
+              {empresas.filter(e=>e.id!==selectedEmpresa.id).map(e=>(
+                <button key={e.id} onClick={()=>{setSelectedEmpresa(e);setShowEmpresaMenu(false)}} className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-800/40 transition text-left">
+                  <span>{e.logo}</span><span className="text-sm">{e.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-<div className="p-3 border-t border-gray-800/50">
-<div className="bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-lg p-3">
-<div className="flex items-center gap-2 mb-2"><span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span><span className="text-emerald-400 text-xs font-bold">Agente Activo</span></div>
-<div className="text-gray-400 text-[10px] leading-relaxed">347 acciones este mes<br/>2 pendientes de aprobaci&oacute;n<br/>Sync: hace 3 min</div>
-</div></div>
-</aside>
+        {/* Nav */}
+        <nav className="flex-1 p-2 space-y-1">
+          {views.map(v=>(
+            <button key={v.id} onClick={()=>setActiveView(v.id)}
+              className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition ${activeView===v.id?"bg-violet-600/20 text-violet-400 font-medium":"text-gray-400 hover:bg-gray-800/40 hover:text-white"}`}>
+              <span>{v.icon}</span>{v.label}
+            </button>
+          ))}
+        </nav>
 
-{/* MAIN */}
-<main className="flex-1 overflow-auto">
-<header className="sticky top-0 z-40 bg-[#0a0b0f]/90 backdrop-blur-xl border-b border-gray-800/50 px-6 py-3">
-<div className="flex items-center justify-between">
-<div><h2 className="text-white font-bold text-lg">{views.find(v=>v.id===view)?.icon} {views.find(v=>v.id===view)?.label}</h2>
-<span className="text-gray-600 text-xs">{activeEmp.name} &mdash; {activeEmp.domain}</span></div>
-<div className="flex items-center gap-3">
-<div className="flex items-center gap-1.5">
-{["\u{1F6D2}","\u{1F4D8}","\u{1F50D}","\u{1F4E7}","\u{1F4F7}","\u{1F3B5}","\u{1F7E1}"].map((ic,i)=><div key={i} className="w-7 h-7 bg-gray-800/60 border border-gray-700/40 rounded-lg flex items-center justify-center text-xs hover:scale-110 transition-transform cursor-pointer">{ic}</div>)}
-<div className="w-7 h-7 bg-violet-500/20 border border-violet-500/30 rounded-lg flex items-center justify-center text-xs cursor-pointer hover:scale-110 transition-transform">+</div>
-</div>
-<div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-full flex items-center justify-center text-xs font-bold text-white">D</div>
-</div></div></header>
+        {/* User info */}
+        <div className="p-3 border-t border-gray-800/40">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-violet-600/30 rounded-full flex items-center justify-center text-xs">{(userData.name || user.email)[0].toUpperCase()}</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-medium truncate">{userData.name || user.email}</div>
+              <div className="text-[10px] text-gray-500">{userData.role}</div>
+            </div>
+          </div>
+          <div className="flex gap-1">
+            {userData.role === 'admin' && (
+              <button onClick={onAdmin} className="flex-1 text-[10px] bg-violet-600/20 hover:bg-violet-600/30 text-violet-400 py-1.5 rounded transition">
+                🛡️ Admin
+              </button>
+            )}
+            <button onClick={onLogout} className="flex-1 text-[10px] bg-gray-800/60 hover:bg-gray-700/60 text-gray-400 py-1.5 rounded transition">
+              🚪 Salir
+            </button>
+          </div>
+        </div>
+      </div>
 
-<div className="p-6 space-y-5">
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-2xl font-bold flex items-center gap-2">{views.find(v=>v.id===activeView)?.icon} {views.find(v=>v.id===activeView)?.label}</h1>
+              <p className="text-gray-400 text-sm mt-1">{selectedEmpresa.name} — {selectedEmpresa.domain}</p>
+            </div>
+            <div className="flex gap-2">
+              {channelIcons.map((ic,i)=>(
+                <div key={i} className="w-8 h-8 bg-gray-900/60 border border-gray-800/60 rounded-lg flex items-center justify-center text-sm hover:border-violet-500/30 transition cursor-pointer">{ic}</div>
+              ))}
+              <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center text-sm font-bold">{(userData.name || 'U')[0]}</div>
+            </div>
+          </div>
 
-{view==="dashboard"&&<>
-{/* Goals */}
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-4">
-<div className="flex items-center justify-between mb-3"><h3 className="text-white font-bold text-sm">Objetivo Principal del Agente</h3><span className="text-gray-600 text-[10px]">El agente optimiza TODO hacia este objetivo</span></div>
-<div className="grid grid-cols-4 gap-2">
-{campaignGoals.map((g,i)=><button key={i} onClick={()=>setGoal(i)} className={`p-3 rounded-xl border transition-all text-left ${goal===i?"bg-violet-500/15 border-violet-500/40 shadow-lg shadow-violet-500/10":"bg-gray-800/30 border-gray-700/30 hover:border-gray-600/50"}`}>
-<div className="flex items-center gap-2 mb-1.5"><span className="text-lg">{g.icon}</span><span className={`text-sm font-bold ${goal===i?"text-violet-300":"text-gray-400"}`}>{g.goal}</span></div>
-<p className="text-gray-500 text-[10px] mb-1.5">{g.desc}</p>
-<div className="text-cyan-400 text-[10px] font-mono font-bold">{g.kpi}</div>
-<div className="flex gap-1 mt-1.5 flex-wrap">{g.ch.map((c,j)=><span key={j} className="px-1.5 py-0.5 bg-gray-800/60 rounded text-[9px] text-gray-500">{c}</span>)}</div>
-</button>)}
-</div></div>
+          {/* Campaign Goals */}
+          {activeView === "dashboard" && (
+            <>
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="font-semibold">Objetivo Principal del Agente</h2>
+                  <span className="text-xs text-gray-500">El agente optimiza TODO hacia este objetivo</span>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {campaignGoals.map((g,i)=>(
+                    <button key={i} onClick={()=>setSelectedGoal(i)}
+                      className={`p-4 rounded-xl border text-left transition ${selectedGoal===i?"bg-violet-600/10 border-violet-500/50":"bg-gray-900/40 border-gray-800/40 hover:border-gray-700"}`}>
+                      <div className="text-lg mb-1">{g.icon} {g.goal}</div>
+                      <div className="text-xs text-gray-400">{g.desc}</div>
+                      <div className="text-xs text-violet-400 font-medium mt-2">{g.kpi}</div>
+                      <div className="flex gap-1 mt-2">{g.ch.map(c=><span key={c} className="text-[10px] bg-gray-800/60 px-2 py-0.5 rounded-full text-gray-400">{c}</span>)}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-{/* KPIs */}
-<div className="grid grid-cols-5 gap-3">
-<Stat label="Revenue Total" value={kpis.revenue.value} prev={kpis.revenue.prev} format="money" icon={"\u{1F4B0}"}/>
-<Stat label="ROAS Promedio" value={kpis.roas.value} prev={kpis.roas.prev} format="x" icon={"\u{1F3AF}"}/>
-<Stat label="Pedidos" value={kpis.orders.value} prev={kpis.orders.prev} icon={"\u{1F4E6}"}/>
-<Stat label="Visitantes Web" value={kpis.visitors.value} prev={kpis.visitors.prev} icon={"\u{1F441}"}/>
-<Stat label="Conversi\u00F3n" value={kpis.convRate.value} prev={kpis.convRate.prev} format="pct" icon={"\u{1F4C8}"}/>
-</div>
-<div className="grid grid-cols-5 gap-3">
-<Stat label="Gasto Ads" value={kpis.adSpend.value} prev={kpis.adSpend.prev} format="money" icon={"\u{1F4E2}"}/>
-<Stat label="CAC" value={kpis.cac.value} prev={kpis.cac.prev} format="money" icon={"\u{1F9EE}"}/>
-<Stat label="LTV Cliente" value={kpis.ltv.value} prev={kpis.ltv.prev} format="money" icon={"\u267B"}/>
-<Stat label="Revenue Email" value={kpis.emailRevenue.value} prev={kpis.emailRevenue.prev} format="money" icon={"\u{1F4E7}"}/>
-<Stat label="Alcance Social" value={kpis.socialReach.value} prev={kpis.socialReach.prev} icon={"\u{1F4F1}"}/>
-</div>
+              {/* KPI Grid */}
+              <div className="grid grid-cols-5 gap-3 mb-6">
+                <Stat label="Revenue Total" value={kpis.revenue.value} prev={kpis.revenue.prev} format="money" icon="\u{1F4B0}"/>
+                <Stat label="ROAS Promedio" value={kpis.roas.value} prev={kpis.roas.prev} format="x" icon="\u{1F4C8}"/>
+                <Stat label="Pedidos" value={kpis.orders.value} prev={kpis.orders.prev} icon="\u{1F4E6}"/>
+                <Stat label="Visitantes Web" value={kpis.visitors.value} prev={kpis.visitors.prev} icon="\u{1F310}"/>
+                <Stat label="Conversi\u00F3n" value={kpis.convRate.value} prev={kpis.convRate.prev} format="pct" icon="\u{1F4CA}"/>
+              </div>
+              <div className="grid grid-cols-5 gap-3 mb-6">
+                <Stat label="Gasto Ads" value={kpis.adSpend.value} prev={kpis.adSpend.prev} format="money" icon="\u{1F4B8}"/>
+                <Stat label="CAC" value={kpis.cac.value} prev={kpis.cac.prev} format="money" icon="\u{1F4B2}"/>
+                <Stat label="LTV Cliente" value={kpis.ltv.value} prev={kpis.ltv.prev} format="money" icon="\u{1F48E}"/>
+                <Stat label="Revenue Email" value={kpis.emailRevenue.value} prev={kpis.emailRevenue.prev} format="money" icon="\u{1F4E7}"/>
+                <Stat label="Alcance Social" value={kpis.socialReach.value} prev={kpis.socialReach.prev} icon="\u{1F4F1}"/>
+              </div>
 
-{/* Charts */}
-<div className="grid grid-cols-3 gap-4">
-<div className="col-span-2 bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold text-sm mb-4">Revenue por Fuente &mdash; Marzo 2026</h3>
-<ResponsiveContainer width="100%" height={260}>
-<AreaChart data={revenueTimeline}>
-<defs>
-<linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="100%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient>
-<linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="100%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient>
-<linearGradient id="gE" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f59e0b" stopOpacity={0.3}/><stop offset="100%" stopColor="#f59e0b" stopOpacity={0}/></linearGradient>
-</defs>
-<CartesianGrid strokeDasharray="3 3" stroke="#1a1b2e"/>
-<XAxis dataKey="date" stroke="#4b5563" fontSize={10}/>
-<YAxis stroke="#4b5563" fontSize={10} tickFormatter={v=>fmt(v)}/>
-<Tooltip formatter={v=>fmt(v)} contentStyle={{background:"#111827",border:"1px solid #1f2937",borderRadius:"10px",fontSize:"11px"}}/>
-<Area type="monotone" dataKey="revenue" name="Total" stroke="#8b5cf6" fill="url(#gR)" strokeWidth={2}/>
-<Area type="monotone" dataKey="ads" name="Ads" stroke="#3b82f6" fill="url(#gA)" strokeWidth={1.5}/>
-<Area type="monotone" dataKey="email" name="Email" stroke="#f59e0b" fill="url(#gE)" strokeWidth={1.5}/>
-</AreaChart></ResponsiveContainer></div>
+              {/* Charts */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="col-span-2 bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                  <h3 className="font-semibold mb-4">Revenue por Fuente — Marzo 2026</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <AreaChart data={revenueTimeline}><CartesianGrid strokeDasharray="3 3" stroke="#1f2937"/>
+                      <XAxis dataKey="date" stroke="#6b7280" tick={{fontSize:11}}/><YAxis stroke="#6b7280" tick={{fontSize:11}} tickFormatter={v=>`$${v/1000}K`}/>
+                      <Tooltip contentStyle={{background:'#111827',border:'1px solid #374151',borderRadius:8}} formatter={v=>fmt(v)}/>
+                      <Area type="monotone" dataKey="ads" stackId="1" stroke="#8b5cf6" fill="#8b5cf660" name="Ads"/>
+                      <Area type="monotone" dataKey="email" stackId="1" stroke="#06b6d4" fill="#06b6d460" name="Email"/>
+                      <Area type="monotone" dataKey="organic" stackId="1" stroke="#10b981" fill="#10b98160" name="Org\u00E1nico"/>
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                  <h3 className="font-semibold mb-4">Performance vs Industria</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <RadarChart data={perfRadar}><PolarGrid stroke="#1f2937"/>
+                      <PolarAngleAxis dataKey="metric" tick={{fill:'#9ca3af',fontSize:11}}/>
+                      <Radar name="Tu Performance" dataKey="current" stroke="#8b5cf6" fill="#8b5cf640"/>
+                      <Radar name="Benchmark" dataKey="benchmark" stroke="#374151" fill="#37415120"/>
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </>
+          )}
 
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold text-sm mb-2">Performance vs Industria</h3>
-<ResponsiveContainer width="100%" height={260}>
-<RadarChart data={perfRadar}>
-<PolarGrid stroke="#1f2937"/>
-<PolarAngleAxis dataKey="metric" stroke="#6b7280" fontSize={10}/>
-<PolarRadiusAxis stroke="#1f2937" domain={[0,100]} tick={false}/>
-<Radar name="Tu rendimiento" dataKey="current" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.25} strokeWidth={2}/>
-<Radar name="Benchmark" dataKey="benchmark" stroke="#4b5563" fill="#4b5563" fillOpacity={0.1} strokeDasharray="4 4"/>
-</RadarChart></ResponsiveContainer>
-<div className="flex items-center justify-center gap-4 mt-1">
-<div className="flex items-center gap-1.5"><span className="w-3 h-1 bg-violet-500 rounded"></span><span className="text-gray-500 text-[10px]">Tu rendimiento</span></div>
-<div className="flex items-center gap-1.5"><span className="w-3 h-1 bg-gray-600 rounded"></span><span className="text-gray-500 text-[10px]">Industria</span></div>
-</div></div></div>
+          {/* Agent View */}
+          {activeView === "agent" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
+                  <h3 className="font-semibold mb-4">\u2699\uFE0F Configuraci\u00F3n del Agente</h3>
+                  <div className="space-y-4">
+                    <div><label className="text-sm text-gray-400">Agresividad: {agentAggressiveness}%</label>
+                      <input type="range" min="0" max="100" value={agentAggressiveness} onChange={e=>setAgentAggressiveness(+e.target.value)} className="w-full mt-1"/>
+                      <div className="flex justify-between text-[10px] text-gray-600"><span>Conservador</span><span>Agresivo</span></div>
+                    </div>
+                    <div><label className="text-sm text-gray-400">Autonom\u00EDa: {agentAutonomy}%</label>
+                      <input type="range" min="0" max="100" value={agentAutonomy} onChange={e=>setAgentAutonomy(+e.target.value)} className="w-full mt-1"/>
+                      <div className="flex justify-between text-[10px] text-gray-600"><span>Pedir aprobaci\u00F3n</span><span>Aut\u00F3nomo total</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
+                  <h3 className="font-semibold mb-4">\u{1F4CA} M\u00E9tricas del Agente Hoy</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-800/40 rounded-lg p-3"><div className="text-gray-400 text-xs">Acciones</div><div className="text-xl font-bold text-white">23</div></div>
+                    <div className="bg-gray-800/40 rounded-lg p-3"><div className="text-gray-400 text-xs">Revenue generado</div><div className="text-xl font-bold text-green-400">$650K</div></div>
+                    <div className="bg-gray-800/40 rounded-lg p-3"><div className="text-gray-400 text-xs">Ahorro</div><div className="text-xl font-bold text-cyan-400">$89K</div></div>
+                    <div className="bg-gray-800/40 rounded-lg p-3"><div className="text-gray-400 text-xs">Eficiencia</div><div className="text-xl font-bold text-violet-400">94%</div></div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
+                <h3 className="font-semibold mb-4">\u{1F4CB} Actividad del Agente</h3>
+                <div className="space-y-3">
+                  {agentActivity.map((a,i)=>(
+                    <div key={i} className={`flex gap-3 p-3 rounded-lg ${a.status==='executing'?'bg-violet-600/10 border border-violet-500/30':'bg-gray-800/30'}`}>
+                      <div className="text-lg">{a.icon}</div>
+                      <div className="flex-1"><div className="text-sm">{a.action}</div><div className="text-xs text-gray-500 mt-1">{a.time} • {a.impact}</div></div>
+                      <span className={`text-xs px-2 py-1 rounded-full h-fit ${a.status==='executing'?'bg-violet-500/20 text-violet-400':a.status==='done'?'bg-green-500/20 text-green-400':'bg-yellow-500/20 text-yellow-400'}`}>
+                        {a.status==='executing'?'Ejecutando':a.status==='done'?'Hecho':'Pendiente'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
-{/* Agent Feed + Channels */}
-<div className="grid grid-cols-3 gap-4">
-<div className="col-span-2 bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<div className="flex items-center justify-between mb-3">
-<div className="flex items-center gap-2">
-<div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-lg flex items-center justify-center text-sm">{"\u{1F916}"}</div>
-<div><h3 className="text-white font-bold text-sm">Actividad del Agente</h3><span className="text-emerald-400 text-[10px] font-medium">Trabajando en {activeEmp.name}</span></div>
-</div>
-<span className="text-amber-300 text-xs font-bold animate-pulse">2 esperando tu OK {"\u2192"}</span>
-</div>
-<div className="space-y-1 max-h-72 overflow-y-auto pr-1">
-{agentActivity.map((log,i)=><div key={i} onClick={()=>setExpAgent(expAgent===i?null:i)} className={`flex items-start gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${log.status==="pending"?"bg-amber-500/[0.08] border border-amber-500/20 hover:bg-amber-500/[0.15]":log.status==="executing"?"bg-blue-500/[0.08] border border-blue-500/20":"hover:bg-gray-800/40 border border-transparent"}`}>
-<span className="text-base mt-0.5">{log.icon}</span>
-<div className="flex-1 min-w-0">
-<span className="text-white text-xs font-medium">{log.action}</span>
-<div className="flex items-center gap-2 mt-0.5"><span className="text-gray-600 text-[10px]">{log.time}</span><Badge status={log.status}/><span className="text-cyan-400/60 text-[10px]">{log.impact}</span></div>
-{expAgent===i&&log.status==="pending"&&<div className="flex gap-2 mt-2">
-<button className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] rounded-lg font-bold transition-colors">Aprobar</button>
-<button className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 text-[11px] rounded-lg transition-colors">Rechazar</button>
-<button className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 text-[11px] rounded-lg transition-colors">Modificar</button>
-</div>}
-</div></div>)}
-</div></div>
+          {/* Channels View */}
+          {activeView === "channels" && (
+            <div className="grid grid-cols-2 gap-4">
+              {channels.map((ch,i)=>(
+                <div key={i} className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 hover:border-violet-500/30 transition">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center gap-2"><span className="text-xl">{ch.icon}</span><span className="font-semibold">{ch.name}</span></div>
+                    <span className="text-green-400 text-sm font-medium">{ch.trend}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div><div className="text-xs text-gray-400">Revenue</div><div className="text-sm font-bold text-white">{fmt(ch.revenue)}</div></div>
+                    <div><div className="text-xs text-gray-400">ROAS</div><div className="text-sm font-bold text-violet-400">{ch.roas}x</div></div>
+                    <div><div className="text-xs text-gray-400">Leads</div><div className="text-sm font-bold text-cyan-400">{ch.leads}</div></div>
+                  </div>
+                  <div className="mt-3 flex justify-between items-center">
+                    <span className="text-xs text-gray-500">Spend: {fmt(ch.spend)}</span>
+                    <span className="text-xs px-2 py-1 bg-gray-800/60 rounded-full text-gray-400">{ch.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold text-sm mb-3">Rendimiento por Canal</h3>
-<div className="space-y-2">
-{channels.map((ch,i)=><div key={i} className="flex items-center gap-2.5 p-2 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
-<span className="text-base">{ch.icon}</span>
-<div className="flex-1 min-w-0">
-<div className="flex items-center justify-between"><span className="text-white text-xs font-medium">{ch.name}</span><span className="text-emerald-400 text-[10px] font-bold">{ch.trend}</span></div>
-<div className="flex items-center justify-between mt-0.5"><span className="text-gray-500 text-[10px]">{ch.spend>0?`${fmt(ch.spend)} \u2192 ${fmt(ch.revenue)}`:fmt(ch.revenue)}</span><span className="text-cyan-400 text-[10px] font-bold">ROAS {ch.roas}x</span></div>
-<div className="w-full bg-gray-700/30 rounded-full h-1 mt-1"><div className="h-1 rounded-full transition-all" style={{width:`${Math.min((typeof ch.roas==="number"?ch.roas:10)/10*100,100)}%`,background:ch.color}}></div></div>
-</div></div>)}
-</div></div>
-</div>
-</>}
+          {/* Placeholder for other views */}
+          {(activeView === "visitors" || activeView === "campaigns" || activeView === "content") && (
+            <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-12 text-center">
+              <div className="text-4xl mb-4">{views.find(v=>v.id===activeView)?.icon}</div>
+              <h3 className="text-xl font-semibold mb-2">{views.find(v=>v.id===activeView)?.label}</h3>
+              <p className="text-gray-400">M\u00F3dulo en desarrollo — Pr\u00F3ximamente disponible</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-{/* AGENT VIEW */}
-{view==="agent"&&<div className="grid grid-cols-3 gap-4">
-<div className="lg:col-span-2 space-y-4">
-{/* Controls */}
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<div className="flex items-center gap-2 mb-4">
-<div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl flex items-center justify-center text-xl">{"\u{1F916}"}</div>
-<div><h3 className="text-white font-bold">Configuraci&oacute;n del Agente</h3><span className="text-emerald-400 text-[10px] font-bold">Semi-aut&oacute;nomo</span></div>
-</div>
-{[{k:"autonomy",l:"Autonom\u00EDa",ic:"\u{1F9E0}",d:"Cu\u00E1ntas decisiones toma solo"},{k:"creativity",l:"Creatividad",ic:"\u{1F3A8}",d:"Variaci\u00F3n en copy y creativos"},{k:"budget",l:"Libertad Budget",ic:"\u{1F4B0}",d:"% del presupuesto que puede mover"},{k:"speed",l:"Velocidad",ic:"\u26A1",d:"Qu\u00E9 tan r\u00E1pido ejecuta cambios"}].map(({k,l,ic,d})=><div key={k} className="mb-4">
-<div className="flex items-center justify-between mb-1"><div className="flex items-center gap-1.5"><span className="text-sm">{ic}</span><span className="text-white text-xs font-semibold">{l}</span></div><span className="text-violet-400 text-xs font-bold">{agent[k]}%</span></div>
-<input type="range" min="0" max="100" value={agent[k]} onChange={e=>setAgent({...agent,[k]:parseInt(e.target.value)})} className="w-full h-1.5 bg-gray-700 rounded-full"/>
-<span className="text-gray-600 text-[10px]">{d}</span>
-</div>)}
-</div>
-{/* Capabilities */}
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold mb-3">Capacidades del Agente</h3>
-<div className="space-y-1.5">
-{[{t:"Sync datos WooCommerce, Ads, Email, Social",on:true,a:true},{t:"Optimizar bids Meta + Google",on:true,a:true},{t:"Pausar campa\u00F1as con bajo ROAS",on:true,a:true},{t:"Enviar flows autom\u00E1ticos",on:true,a:true},{t:"Detectar anomal\u00EDas y alertar",on:true,a:true},{t:"Rastrear visitantes web",on:true,a:true},{t:"Generar copy con IA",on:true,a:false},{t:"Crear campa\u00F1as nuevas",on:true,a:false},{t:"Publicar en RRSS",on:true,a:false},{t:"Modificar budget >20%",on:false,a:false},{t:"Eliminar campa\u00F1as",on:false,a:false}].map((item,i)=><div key={i} className="flex items-center justify-between py-1.5 px-2 rounded bg-gray-800/30">
-<span className="text-gray-400 text-[10px]">{item.t}</span>
-<div className="flex items-center gap-2">
-{item.a?<span className="text-[9px] text-emerald-500/70 bg-emerald-500/10 px-1.5 rounded">auto</span>:item.on?<span className="text-[9px] text-amber-400/70 bg-amber-500/10 px-1.5 rounded">pide OK</span>:null}
-<div className={`w-7 h-3.5 rounded-full flex items-center px-0.5 cursor-pointer ${item.on?"bg-violet-600 justify-end":"bg-gray-700 justify-start"}`}><div className="w-2.5 h-2.5 bg-white rounded-full"></div></div>
-</div></div>)}
-</div></div>
-</div>
-<div className="space-y-4">
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold mb-3">Impacto del Agente &mdash; 30 d&iacute;as</h3>
-<div className="space-y-3">
-{[{m:"ROAS mejorado",b:"2.8x",a:"3.9x",d:"+39%"},{m:"CPA reducido",b:"$9,200",a:"$6,800",d:"-26%"},{m:"Revenue email",b:"$680K",a:"$1.15M",d:"+69%"},{m:"Carritos recuperados",b:"0",a:"95",d:"+$475K"},{m:"Tiempo manual",b:"20 hrs/sem",a:"4 hrs/sem",d:"-80%"},{m:"Posts/semana",b:"3-5",a:"10-12",d:"+150%"},{m:"Acciones ejecutadas",b:"",a:"347",d:"total"}].map((item,i)=><div key={i} className="flex items-center justify-between">
-<span className="text-gray-500 text-xs">{item.m}</span>
-<div className="flex items-center gap-2">{item.b&&<span className="text-gray-700 text-[10px] line-through">{item.b}</span>}<span className="text-white text-sm font-bold">{item.a}</span><span className="text-emerald-400 text-[10px] font-bold">{item.d}</span></div>
-</div>)}
-</div></div>
-<div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-xl p-4">
-<h4 className="text-violet-300 font-bold text-sm mb-2">ROI del Agente</h4>
-<div className="text-3xl font-black text-white mb-1">23.4x</div>
-<p className="text-gray-400 text-[10px]">Costo: ~$60-100 USD/mes<br/>Revenue generado: ~$2,300 USD/mes<br/>Se paga solo 23 veces.</p>
-</div></div>
-</div>}
+// ============================================
+// APP ROOT - AUTH STATE MANAGEMENT
+// ============================================
+function App() {
+  const [authState, setAuthState] = useState('loading'); // loading, login, dashboard, admin
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-{/* VISITORS VIEW */}
-{view==="visitors"&&<>
-<div className="grid grid-cols-4 gap-3">
-<Stat label="Visitantes Hoy" value={1840} prev={1620} icon={"\u{1F441}"}/>
-<Stat label="En el sitio ahora" value={42} icon={"\u{1F7E2}"}/>
-<Stat label="Conversi\u00F3n" value={3.2} prev={2.4} format="pct" icon={"\u{1F4C8}"}/>
-<Stat label="Revenue/Visita" value={364} prev={310} format="money" icon={"\u{1F4B0}"}/>
-</div>
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<div className="flex items-center justify-between mb-4"><h3 className="text-white font-bold">Segmentos de Visitantes &mdash; Acciones del Agente</h3><span className="text-emerald-400 text-[10px] font-bold">Tracking 24/7</span></div>
-<div className="space-y-2.5">
-{visitorIntel.map((seg,i)=><div key={i} className="bg-gray-800/30 rounded-xl p-4 border border-gray-700/20">
-<div className="flex items-center justify-between mb-2">
-<div className="flex items-center gap-3"><div className="w-2.5 h-10 rounded-full" style={{background:seg.color}}></div><div><span className="text-white font-semibold text-sm">{seg.segment}</span><div className="flex items-center gap-2"><span className="text-gray-400 text-xs">{seg.count.toLocaleString()} usuarios</span><span className="text-gray-600 text-[10px]">({seg.pct}%)</span></div></div></div>
-<div className="w-32 bg-gray-700/30 rounded-full h-2"><div className="h-2 rounded-full" style={{width:`${Math.min(seg.pct*2,100)}%`,background:seg.color}}></div></div>
-</div>
-<div className="ml-6 pl-3 border-l-2 border-violet-500/30"><div className="flex items-center gap-2"><span className="text-violet-400 text-[10px] font-bold">AGENTE IA {"\u2192"}</span><span className="text-gray-300 text-xs">{seg.action}</span></div></div>
-</div>)}
-</div></div>
-</>}
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user && user.emailVerified) {
+        try {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists && userDoc.data().status === 'active') {
+            setCurrentUser(user);
+            setUserData(userDoc.data());
+            // Update last login
+            db.collection('users').doc(user.uid).update({lastLogin: firebase.firestore.FieldValue.serverTimestamp()});
+            setAuthState('dashboard');
+          } else {
+            setAuthState('login');
+          }
+        } catch(e) {
+          setAuthState('login');
+        }
+      } else {
+        setAuthState('login');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
-{/* CHANNELS VIEW */}
-{view==="channels"&&<>
-<div className="space-y-3">
-{channels.map((ch,i)=><div key={i} className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-4 hover:border-gray-700/50 transition-all">
-<div className="flex items-center gap-4">
-<div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{background:`${ch.color}15`,border:`1px solid ${ch.color}30`}}>{ch.icon}</div>
-<div className="flex-1">
-<div className="flex items-center gap-3 mb-1"><span className="text-white font-bold">{ch.name}</span><Badge status={ch.status==="optimizing"?"working":"done"}/><span className="text-emerald-400 text-xs font-bold">{ch.trend}</span></div>
-<div className="flex items-center gap-6">
-{ch.spend>0&&<span className="text-gray-500 text-xs">Gasto: <span className="text-gray-300 font-medium">{fmt(ch.spend)}</span></span>}
-<span className="text-gray-500 text-xs">Revenue: <span className="text-emerald-400 font-bold">{fmt(ch.revenue)}</span></span>
-<span className="text-gray-500 text-xs">ROAS: <span className="text-cyan-400 font-bold">{ch.roas}x</span></span>
-<span className="text-gray-500 text-xs">Leads: <span className="text-violet-400 font-medium">{ch.leads}</span></span>
-</div></div>
-<div className="text-right"><div className="text-white font-bold text-lg">{fmt(ch.revenue)}</div><div className="text-gray-600 text-[10px]">revenue</div></div>
-</div></div>)}
-</div>
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold text-sm mb-4">ROAS por Canal</h3>
-<ResponsiveContainer width="100%" height={250}>
-<BarChart data={channels.filter(c=>typeof c.roas==="number")} layout="vertical">
-<CartesianGrid strokeDasharray="3 3" stroke="#1a1b2e" horizontal={false}/>
-<XAxis type="number" stroke="#4b5563" fontSize={10}/>
-<YAxis type="category" dataKey="name" stroke="#4b5563" fontSize={11} width={100}/>
-<Tooltip contentStyle={{background:"#111827",border:"1px solid #1f2937",borderRadius:"10px"}}/>
-<Bar dataKey="roas" name="ROAS" radius={[0,6,6,0]}>{channels.filter(c=>typeof c.roas==="number").map((e,i)=><Cell key={i} fill={e.color}/>)}</Bar>
-</BarChart></ResponsiveContainer></div>
-</>}
+  const handleLogin = (user, data) => {
+    setCurrentUser(user);
+    setUserData(data);
+    setAuthState('dashboard');
+  };
 
-{/* CAMPAIGNS */}
-{view==="campaigns"&&<div className="space-y-4">
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold mb-3">Objetivo: {campaignGoals[goal].icon} {campaignGoals[goal].goal}</h3>
-<p className="text-gray-400 text-sm mb-4">{campaignGoals[goal].desc}</p>
-<div className="grid grid-cols-4 gap-2">
-{campaignGoals.map((g,i)=><button key={i} onClick={()=>setGoal(i)} className={`p-3 rounded-xl border text-center transition-all ${goal===i?"bg-violet-500/15 border-violet-500/40":"bg-gray-800/30 border-gray-700/30 hover:border-gray-600/50"}`}>
-<span className="text-xl">{g.icon}</span><div className={`text-xs font-bold mt-1 ${goal===i?"text-violet-300":"text-gray-500"}`}>{g.goal}</div></button>)}
-</div></div>
-<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5"><p className="text-gray-300 text-sm">Cuando cambias el objetivo, el agente autom&aacute;ticamente ajusta: estrategias de bidding en Meta y Google, tipo de contenido, segmentos de email, y m&eacute;tricas que optimiza. Todo se reconfigura con un click.</p></div>
-</div>}
+  const handleLogout = async () => {
+    await auth.signOut();
+    setCurrentUser(null);
+    setUserData(null);
+    setAuthState('login');
+  };
 
-{/* CONTENT */}
-{view==="content"&&<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
-<h3 className="text-white font-bold mb-4">Calendario de Contenido &mdash; Generado por Agente IA</h3>
-<div className="grid grid-cols-7 gap-2">
-{["Lun","Mar","Mi\u00E9","Jue","Vie","S\u00E1b","Dom"].map(d=><div key={d} className="text-center text-gray-600 text-[10px] font-bold uppercase pb-2">{d}</div>)}
-{[{day:24,c:"Carousel: Tips riego",p:"IG",s:"published"},{day:25,c:"Reel: Tutorial fertilizaci\u00F3n",p:"IG+FB",s:"scheduled"},{day:26,c:"Post: Promo semillas",p:"FB",s:"draft"},{day:27,c:"Story: Behind the scenes",p:"IG",s:"draft"},{day:28,c:"Video: Unboxing kit riego",p:"TikTok",s:"idea"},{day:29,c:"Carousel: Gu\u00EDa de poda",p:"IG",s:"idea"},{day:30,c:"Post: Testimonio cliente",p:"FB+IG",s:"idea"}].map((item,i)=>{
-const sc={published:"border-emerald-500/40 bg-emerald-500/10",scheduled:"border-blue-500/40 bg-blue-500/10",draft:"border-amber-500/30 bg-amber-500/5",idea:"border-gray-700/40 bg-gray-800/30"};
-return <div key={i} className={`border rounded-lg p-2.5 ${sc[item.s]} min-h-[80px]`}><div className="text-white text-xs font-bold mb-1">{item.day}</div><div className="text-gray-300 text-[10px] leading-tight mb-1">{item.c}</div><div className="text-gray-500 text-[9px]">{item.p}</div></div>})}
-</div>
-<div className="flex items-center gap-4 mt-3">
-{[{l:"Publicado",c:"bg-emerald-500/40"},{l:"Programado",c:"bg-blue-500/40"},{l:"Borrador",c:"bg-amber-500/30"},{l:"Idea IA",c:"bg-gray-700/40"}].map((s,i)=><div key={i} className="flex items-center gap-1.5"><span className={`w-2.5 h-2.5 rounded ${s.c}`}></span><span className="text-gray-500 text-[10px]">{s.l}</span></div>)}
-</div></div>}
+  if (authState === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#0a0b0f] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-violet-600 to-purple-800 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 animate-pulse">🤖</div>
+          <p className="text-gray-400 animate-pulse">Verificando acceso...</p>
+        </div>
+      </div>
+    );
+  }
 
-</div></main></div>)}
+  if (authState === 'login') {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  if (authState === 'admin') {
+    return <AdminPanel currentUser={currentUser} userData={userData} onBack={() => setAuthState('dashboard')} />;
+  }
+
+  return (
+    <Dashboard
+      user={currentUser}
+      userData={userData}
+      onLogout={handleLogout}
+      onAdmin={() => setAuthState('admin')}
+    />
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
