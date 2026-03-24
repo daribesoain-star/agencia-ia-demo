@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Agencia IA â Marketing Intelligence Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/recharts@2.13.3/umd/Recharts.js"></script>
+<style>
+*{scrollbar-width:thin;scrollbar-color:#374151 transparent}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#374151;border-radius:3px}
+::selection{background:#8b5cf650;color:#fff}
+input[type=range]{-webkit-appearance:none;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:#1f2937;border-radius:3px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;background:#8b5cf6;height:16px;width:16px;border-radius:50%;border:2px solid #0a0b0f}
+</style>
+<script>tailwind.config={theme:{extend:{}}}</script>
+</head>
+<body class="bg-[#0a0b0f]">
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useCallback}=React;
+const {LineChart,Line,BarChart,Bar,AreaChart,Area,PieChart,Pie,Cell,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Legend,RadarChart,Radar,PolarGrid,PolarAngleAxis,PolarRadiusAxis}=Recharts;
+
+const empresas=[
+{id:1,name:"Agrocomercial",domain:"agrocomercial.cl",logo:"\u{1F33F}",industry:"Agro/Retail",plan:"Pro",agentStatus:"working",connections:7},
+{id:2,name:"Factur-AI",domain:"factur-ai.cl",logo:"\u{1F4C4}",industry:"SaaS/Fintech",plan:"Pro",agentStatus:"working",connections:5},
+{id:3,name:"Cliente Demo",domain:"demo-tienda.cl",logo:"\u{1F6CD}",industry:"E-commerce",plan:"Starter",agentStatus:"configuring",connections:3}
+];
+
+const kpis={
+revenue:{value:10350000,prev:8900000},adSpend:{value:1265000,prev:1340000},
+roas:{value:3.9,prev:2.8},orders:{value:342,prev:298},
+visitors:{value:28400,prev:24100},convRate:{value:3.2,prev:2.4},
+cac:{value:6800,prev:9200},ltv:{value:45000,prev:38000},
+emailRevenue:{value:1150000,prev:680000},socialReach:{value:145000,prev:98000}
+};
+
+const revenueTimeline=[
+{date:"1 Mar",revenue:280000,ads:95000,email:32000,organic:45000},
+{date:"4 Mar",revenue:420000,ads:140000,email:58000,organic:52000},
+{date:"7 Mar",revenue:380000,ads:120000,email:45000,organic:48000},
+{date:"10 Mar",revenue:520000,ads:185000,email:72000,organic:63000},
+{date:"13 Mar",revenue:460000,ads:155000,email:64000,organic:55000},
+{date:"16 Mar",revenue:610000,ads:210000,email:88000,organic:72000},
+{date:"19 Mar",revenue:580000,ads:195000,email:82000,organic:68000},
+{date:"22 Mar",revenue:720000,ads:245000,email:95000,organic:84000},
+{date:"24 Mar",revenue:650000,ads:220000,email:90000,organic:78000}
+];
+
+const channels=[
+{name:"Meta Ads",icon:"\u{1F4D8}",spend:520000,revenue:2080000,roas:4.0,status:"optimizing",trend:"+12%",leads:145,color:"#1877F2"},
+{name:"Google Ads",icon:"\u{1F50D}",spend:420000,revenue:1890000,roas:4.5,status:"scaling",trend:"+18%",leads:210,color:"#4285F4"},
+{name:"Instagram",icon:"\u{1F4F7}",spend:180000,revenue:540000,roas:3.0,status:"creating",trend:"+8%",leads:68,color:"#E4405F"},
+{name:"Mailchimp",icon:"\u{1F4E7}",spend:15000,revenue:1150000,roas:76.7,status:"automating",trend:"+62%",leads:95,color:"#FFE01B"},
+{name:"WooCommerce",icon:"\u{1F6D2}",spend:0,revenue:3200000,roas:"\u221E",status:"tracking",trend:"+15%",leads:342,color:"#96588A"},
+{name:"TikTok",icon:"\u{1F3B5}",spend:130000,revenue:390000,roas:3.0,status:"testing",trend:"+25%",leads:42,color:"#000"},
+{name:"MercadoLibre",icon:"\u{1F7E1}",spend:0,revenue:480000,roas:"\u221E",status:"listing",trend:"+5%",leads:28,color:"#FFE600"}
+];
+
+const visitorIntel=[
+{segment:"Visitantes nuevos",count:18200,pct:64,action:"Popup 10% descuento primera compra",color:"#3b82f6"},
+{segment:"Vieron producto 2+ veces",count:4800,pct:17,action:"Email con producto visto + descuento 5%",color:"#8b5cf6"},
+{segment:"Carrito abandonado",count:890,pct:3,action:"Flow: Email 1h \u2192 WhatsApp 4h \u2192 Retargeting 24h",color:"#f59e0b"},
+{segment:"Compradores recientes",count:1200,pct:4,action:"Cross-sell autom\u00E1tico d\u00EDa 3 post-compra",color:"#10b981"},
+{segment:"Inactivos 30+ d\u00EDas",count:2100,pct:7,action:"Campa\u00F1a win-back con oferta especial",color:"#ef4444"},
+{segment:"VIP (3+ compras)",count:380,pct:1,action:"Programa lealtad + acceso anticipado",color:"#06b6d4"}
+];
+
+const agentActivity=[
+{time:"Ahora",icon:"\u26A1",action:"Redistribuyendo $85K de campa\u00F1a baja \u2192 Riego Tecnificado (ROAS 4.5x)",status:"executing",impact:"+$120K revenue est."},
+{time:"14:32",icon:"\u{1F3A8}",action:"Gener\u00F3 4 variantes de ad para Fertilizante Premium \u2014 A/B test en Meta",status:"done",impact:"Testing 4 creativos"},
+{time:"13:45",icon:"\u{1F441}",action:"23 visitantes viendo Kit Riego sin comprar \u2014 activ\u00F3 retargeting",status:"done",impact:"23 en remarketing"},
+{time:"13:15",icon:"\u26A1",action:"Cre\u00F3 audiencia Lookalike 1% basada en top 200 compradores Q1",status:"pending",impact:"~180K personas"},
+{time:"12:48",icon:"\u{1F4E7}",action:"Envi\u00F3 flow carrito abandonado a 23 usuarios",status:"done",impact:"Revenue esp: $247K"},
+{time:"12:00",icon:"\u{1F4F1}",action:"Public\u00F3 carousel Tips de riego oto\u00F1o en IG",status:"done",impact:"Alcance: 4,500"},
+{time:"11:30",icon:"\u26A1",action:"Paus\u00F3 ad set Herramientas Jard\u00EDn \u2014 CPA $1,200 > umbral $800",status:"done",impact:"Ahorro: $45K/sem"},
+{time:"09:00",icon:"\u{1F4CB}",action:"Reporte diario WhatsApp: Revenue $650K | ROAS 3.9x | 18 pedidos",status:"done",impact:"Reporte entregado"},
+{time:"08:30",icon:"\u{1F504}",action:"Sync completo: WooCommerce, Mailchimp, Meta, Google",status:"done",impact:"Datos actualizados"}
+];
+
+const campaignGoals=[
+{goal:"M\u00E1s Ventas",icon:"\u{1F4B0}",desc:"Maximizar ROAS y conversiones",kpi:"ROAS 3.9x \u2192 4.5x",ch:["Meta Ads","Google Ads","Email"]},
+{goal:"M\u00E1s Mensajes",icon:"\u{1F4AC}",desc:"Generar leads via WhatsApp y DMs",kpi:"42 msgs/d\u00EDa",ch:["Meta Ads","Instagram","WhatsApp"]},
+{goal:"M\u00E1s Exposici\u00F3n",icon:"\u{1F441}",desc:"Maximizar alcance y brand awareness",kpi:"145K reach/mes",ch:["TikTok","Instagram","YouTube"]},
+{goal:"M\u00E1s Tr\u00E1fico",icon:"\u{1F310}",desc:"Visitantes calificados al sitio web",kpi:"28.4K visitas/mes",ch:["Google Ads","SEO","Social"]}
+];
+
+const perfRadar=[
+{metric:"ROAS",current:85,benchmark:60},{metric:"CTR",current:72,benchmark:55},
+{metric:"Email OR",current:78,benchmark:65},{metric:"Social ER",current:68,benchmark:45},
+{metric:"Conv Rate",current:74,benchmark:50},{metric:"CPA",current:80,benchmark:55}
+];
+
+const fmt=(n)=>{if(n>=1e6)return`$${(n/1e6).toFixed(1)}M`;if(n>=1e3)return`$${Math.round(n/1e3)}K`;return`$${n}`};
+const pctChg=(c,p)=>{const d=((c-p)/p*100).toFixed(1);return{value:d,pos:d>=0}};
+
+function Stat({label,value,prev,format,icon}){
+const ch=prev?pctChg(typeof value==="number"?value:parseFloat(value),typeof prev==="number"?prev:parseFloat(prev)):null;
+const dv=format==="money"?fmt(value):format==="pct"?`${value}%`:format==="x"?`${value}x`:value?.toLocaleString?.("es-CL")||value;
+return(<div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 hover:border-gray-700/60 transition-all group">
+<div className="flex items-center justify-between mb-1"><span className="text-gray-500 text-[11px] font-medium uppercase tracking-wider">{label}</span>{icon&&<span className="text-base opacity-60 group-hover:opacity-100">{icon}</span>}</div>
+<div className="text-white font-bold text-xl">{dv}</div>
+{ch&&<div className="flex items-center gap-1.5 mt-1"><span className={`text-xs font-bold ${ch.pos?"text-emerald-400":"text-red-400"}`}>{ch.pos?"\u2191":"\u2193"} {Math.abs(ch.value)}%</span><span className="text-gray-600 text-[10px]">vs mes anterior</span></div>}
+</div>)}
+
+function Badge({status}){
+const s={working:"bg-emerald-500/15 text-emerald-400 border-emerald-500/30",configuring:"bg-amber-500/15 text-amber-400 border-amber-500/30",executing:"bg-blue-500/15 text-blue-400 border-blue-500/30",done:"bg-emerald-500/10 text-emerald-500/80 border-emerald-500/20",pending:"bg-amber-500/15 text-amber-300 border-amber-500/30 animate-pulse"};
+const l={working:"Agente Trabajando",configuring:"Configurando",executing:"Ejecutando...",done:"Completado",pending:"Esperando tu OK"};
+return <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${s[status]||""}`}>{l[status]||status}</span>}
+
+function App(){
+const[activeEmp,setActiveEmp]=useState(empresas[0]);
+const[view,setView]=useState("dashboard");
+const[showSel,setShowSel]=useState(false);
+const[agent,setAgent]=useState({autonomy:65,creativity:70,budget:40,speed:80});
+const[goal,setGoal]=useState(0);
+const[expAgent,setExpAgent]=useState(null);
+
+const views=[{id:"dashboard",label:"Dashboard",icon:"\u{1F4CA}"},{id:"agent",label:"Agente IA",icon:"\u{1F916}"},{id:"channels",label:"Canales",icon:"\u{1F4E1}"},{id:"visitors",label:"Visitantes",icon:"\u{1F441}"},{id:"campaigns",label:"Campa\u00F1as",icon:"\u{1F3AF}"},{id:"content",label:"Contenido",icon:"\u{1F4F1}"}];
+
+return(<div className="min-h-screen bg-[#0a0b0f] text-gray-100 flex">
+{/* SIDEBAR */}
+<aside className="w-64 bg-[#0d0e14] border-r border-gray-800/50 flex flex-col min-h-screen sticky top-0">
+<div className="p-4 border-b border-gray-800/50">
+<div className="flex items-center gap-2.5">
+<div className="w-9 h-9 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-cyan-400 rounded-xl flex items-center justify-center"><span className="text-white font-black text-sm">IA</span></div>
+<div><h1 className="text-white font-bold text-sm leading-tight">Agencia IA</h1><span className="text-gray-600 text-[10px]">Marketing Intelligence Platform</span></div>
+</div></div>
+
+<div className="p-3 border-b border-gray-800/50">
+<button onClick={()=>setShowSel(!showSel)} className="w-full flex items-center gap-2.5 p-2.5 bg-gray-800/40 hover:bg-gray-800/70 rounded-lg transition-colors">
+<span className="text-xl">{activeEmp.logo}</span>
+<div className="flex-1 text-left"><div className="text-white text-sm font-semibold">{activeEmp.name}</div><div className="text-gray-500 text-[10px]">{activeEmp.domain}</div></div>
+<span className="text-gray-600 text-xs">{"\u25BE"}</span>
+</button>
+{showSel&&<div className="mt-2 space-y-1 bg-gray-900 border border-gray-700 rounded-lg p-1.5 shadow-2xl">
+{empresas.map(e=><button key={e.id} onClick={()=>{setActiveEmp(e);setShowSel(false)}} className={`w-full flex items-center gap-2.5 p-2 rounded-lg transition-colors ${e.id===activeEmp.id?"bg-violet-500/20 border border-violet-500/30":"hover:bg-gray-800 border border-transparent"}`}>
+<span className="text-lg">{e.logo}</span><div className="flex-1 text-left"><div className="text-white text-xs font-medium">{e.name}</div><div className="text-gray-500 text-[10px]">{e.domain}</div></div><Badge status={e.agentStatus}/></button>)}
+<button className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-800 text-violet-400"><span className="w-6 h-6 bg-violet-500/20 rounded-lg flex items-center justify-center text-sm">+</span><span className="text-xs font-medium">Agregar empresa</span></button>
+</div>}
+</div>
+
+<nav className="flex-1 p-3 space-y-0.5">
+{views.map(v=><button key={v.id} onClick={()=>setView(v.id)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${view===v.id?"bg-violet-500/15 text-violet-300 border border-violet-500/20 font-semibold":"text-gray-500 hover:text-gray-300 hover:bg-gray-800/40 border border-transparent"}`}><span className="text-base">{v.icon}</span>{v.label}</button>)}
+</nav>
+
+<div className="p-3 border-t border-gray-800/50">
+<div className="bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-lg p-3">
+<div className="flex items-center gap-2 mb-2"><span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span><span className="text-emerald-400 text-xs font-bold">Agente Activo</span></div>
+<div className="text-gray-400 text-[10px] leading-relaxed">347 acciones este mes<br/>2 pendientes de aprobaci&oacute;n<br/>Sync: hace 3 min</div>
+</div></div>
+</aside>
+
+{/* MAIN */}
+<main className="flex-1 overflow-auto">
+<header className="sticky top-0 z-40 bg-[#0a0b0f]/90 backdrop-blur-xl border-b border-gray-800/50 px-6 py-3">
+<div className="flex items-center justify-between">
+<div><h2 className="text-white font-bold text-lg">{views.find(v=>v.id===view)?.icon} {views.find(v=>v.id===view)?.label}</h2>
+<span className="text-gray-600 text-xs">{activeEmp.name} &mdash; {activeEmp.domain}</span></div>
+<div className="flex items-center gap-3">
+<div className="flex items-center gap-1.5">
+{["\u{1F6D2}","\u{1F4D8}","\u{1F50D}","\u{1F4E7}","\u{1F4F7}","\u{1F3B5}","\u{1F7E1}"].map((ic,i)=><div key={i} className="w-7 h-7 bg-gray-800/60 border border-gray-700/40 rounded-lg flex items-center justify-center text-xs hover:scale-110 transition-transform cursor-pointer">{ic}</div>)}
+<div className="w-7 h-7 bg-violet-500/20 border border-violet-500/30 rounded-lg flex items-center justify-center text-xs cursor-pointer hover:scale-110 transition-transform">+</div>
+</div>
+<div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-full flex items-center justify-center text-xs font-bold text-white">D</div>
+</div></div></header>
+
+<div className="p-6 space-y-5">
+
+{view==="dashboard"&&<>
+{/* Goals */}
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-4">
+<div className="flex items-center justify-between mb-3"><h3 className="text-white font-bold text-sm">Objetivo Principal del Agente</h3><span className="text-gray-600 text-[10px]">El agente optimiza TODO hacia este objetivo</span></div>
+<div className="grid grid-cols-4 gap-2">
+{campaignGoals.map((g,i)=><button key={i} onClick={()=>setGoal(i)} className={`p-3 rounded-xl border transition-all text-left ${goal===i?"bg-violet-500/15 border-violet-500/40 shadow-lg shadow-violet-500/10":"bg-gray-800/30 border-gray-700/30 hover:border-gray-600/50"}`}>
+<div className="flex items-center gap-2 mb-1.5"><span className="text-lg">{g.icon}</span><span className={`text-sm font-bold ${goal===i?"text-violet-300":"text-gray-400"}`}>{g.goal}</span></div>
+<p className="text-gray-500 text-[10px] mb-1.5">{g.desc}</p>
+<div className="text-cyan-400 text-[10px] font-mono font-bold">{g.kpi}</div>
+<div className="flex gap-1 mt-1.5 flex-wrap">{g.ch.map((c,j)=><span key={j} className="px-1.5 py-0.5 bg-gray-800/60 rounded text-[9px] text-gray-500">{c}</span>)}</div>
+</button>)}
+</div></div>
+
+{/* KPIs */}
+<div className="grid grid-cols-5 gap-3">
+<Stat label="Revenue Total" value={kpis.revenue.value} prev={kpis.revenue.prev} format="money" icon={"\u{1F4B0}"}/>
+<Stat label="ROAS Promedio" value={kpis.roas.value} prev={kpis.roas.prev} format="x" icon={"\u{1F3AF}"}/>
+<Stat label="Pedidos" value={kpis.orders.value} prev={kpis.orders.prev} icon={"\u{1F4E6}"}/>
+<Stat label="Visitantes Web" value={kpis.visitors.value} prev={kpis.visitors.prev} icon={"\u{1F441}"}/>
+<Stat label="Conversi\u00F3n" value={kpis.convRate.value} prev={kpis.convRate.prev} format="pct" icon={"\u{1F4C8}"}/>
+</div>
+<div className="grid grid-cols-5 gap-3">
+<Stat label="Gasto Ads" value={kpis.adSpend.value} prev={kpis.adSpend.prev} format="money" icon={"\u{1F4E2}"}/>
+<Stat label="CAC" value={kpis.cac.value} prev={kpis.cac.prev} format="money" icon={"\u{1F9EE}"}/>
+<Stat label="LTV Cliente" value={kpis.ltv.value} prev={kpis.ltv.prev} format="money" icon={"\u267B"}/>
+<Stat label="Revenue Email" value={kpis.emailRevenue.value} prev={kpis.emailRevenue.prev} format="money" icon={"\u{1F4E7}"}/>
+<Stat label="Alcance Social" value={kpis.socialReach.value} prev={kpis.socialReach.prev} icon={"\u{1F4F1}"}/>
+</div>
+
+{/* Charts */}
+<div className="grid grid-cols-3 gap-4">
+<div className="col-span-2 bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold text-sm mb-4">Revenue por Fuente &mdash; Marzo 2026</h3>
+<ResponsiveContainer width="100%" height={260}>
+<AreaChart data={revenueTimeline}>
+<defs>
+<linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3}/><stop offset="100%" stopColor="#8b5cf6" stopOpacity={0}/></linearGradient>
+<linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="100%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient>
+<linearGradient id="gE" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f59e0b" stopOpacity={0.3}/><stop offset="100%" stopColor="#f59e0b" stopOpacity={0}/></linearGradient>
+</defs>
+<CartesianGrid strokeDasharray="3 3" stroke="#1a1b2e"/>
+<XAxis dataKey="date" stroke="#4b5563" fontSize={10}/>
+<YAxis stroke="#4b5563" fontSize={10} tickFormatter={v=>fmt(v)}/>
+<Tooltip formatter={v=>fmt(v)} contentStyle={{background:"#111827",border:"1px solid #1f2937",borderRadius:"10px",fontSize:"11px"}}/>
+<Area type="monotone" dataKey="revenue" name="Total" stroke="#8b5cf6" fill="url(#gR)" strokeWidth={2}/>
+<Area type="monotone" dataKey="ads" name="Ads" stroke="#3b82f6" fill="url(#gA)" strokeWidth={1.5}/>
+<Area type="monotone" dataKey="email" name="Email" stroke="#f59e0b" fill="url(#gE)" strokeWidth={1.5}/>
+</AreaChart></ResponsiveContainer></div>
+
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold text-sm mb-2">Performance vs Industria</h3>
+<ResponsiveContainer width="100%" height={260}>
+<RadarChart data={perfRadar}>
+<PolarGrid stroke="#1f2937"/>
+<PolarAngleAxis dataKey="metric" stroke="#6b7280" fontSize={10}/>
+<PolarRadiusAxis stroke="#1f2937" domain={[0,100]} tick={false}/>
+<Radar name="Tu rendimiento" dataKey="current" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.25} strokeWidth={2}/>
+<Radar name="Benchmark" dataKey="benchmark" stroke="#4b5563" fill="#4b5563" fillOpacity={0.1} strokeDasharray="4 4"/>
+</RadarChart></ResponsiveContainer>
+<div className="flex items-center justify-center gap-4 mt-1">
+<div className="flex items-center gap-1.5"><span className="w-3 h-1 bg-violet-500 rounded"></span><span className="text-gray-500 text-[10px]">Tu rendimiento</span></div>
+<div className="flex items-center gap-1.5"><span className="w-3 h-1 bg-gray-600 rounded"></span><span className="text-gray-500 text-[10px]">Industria</span></div>
+</div></div></div>
+
+{/* Agent Feed + Channels */}
+<div className="grid grid-cols-3 gap-4">
+<div className="col-span-2 bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<div className="flex items-center justify-between mb-3">
+<div className="flex items-center gap-2">
+<div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-lg flex items-center justify-center text-sm">{"\u{1F916}"}</div>
+<div><h3 className="text-white font-bold text-sm">Actividad del Agente</h3><span className="text-emerald-400 text-[10px] font-medium">Trabajando en {activeEmp.name}</span></div>
+</div>
+<span className="text-amber-300 text-xs font-bold animate-pulse">2 esperando tu OK {"\u2192"}</span>
+</div>
+<div className="space-y-1 max-h-72 overflow-y-auto pr-1">
+{agentActivity.map((log,i)=><div key={i} onClick={()=>setExpAgent(expAgent===i?null:i)} className={`flex items-start gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${log.status==="pending"?"bg-amber-500/[0.08] border border-amber-500/20 hover:bg-amber-500/[0.15]":log.status==="executing"?"bg-blue-500/[0.08] border border-blue-500/20":"hover:bg-gray-800/40 border border-transparent"}`}>
+<span className="text-base mt-0.5">{log.icon}</span>
+<div className="flex-1 min-w-0">
+<span className="text-white text-xs font-medium">{log.action}</span>
+<div className="flex items-center gap-2 mt-0.5"><span className="text-gray-600 text-[10px]">{log.time}</span><Badge status={log.status}/><span className="text-cyan-400/60 text-[10px]">{log.impact}</span></div>
+{expAgent===i&&log.status==="pending"&&<div className="flex gap-2 mt-2">
+<button className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] rounded-lg font-bold transition-colors">Aprobar</button>
+<button className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 text-[11px] rounded-lg transition-colors">Rechazar</button>
+<button className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 text-[11px] rounded-lg transition-colors">Modificar</button>
+</div>}
+</div></div>)}
+</div></div>
+
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold text-sm mb-3">Rendimiento por Canal</h3>
+<div className="space-y-2">
+{channels.map((ch,i)=><div key={i} className="flex items-center gap-2.5 p-2 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+<span className="text-base">{ch.icon}</span>
+<div className="flex-1 min-w-0">
+<div className="flex items-center justify-between"><span className="text-white text-xs font-medium">{ch.name}</span><span className="text-emerald-400 text-[10px] font-bold">{ch.trend}</span></div>
+<div className="flex items-center justify-between mt-0.5"><span className="text-gray-500 text-[10px]">{ch.spend>0?`${fmt(ch.spend)} \u2192 ${fmt(ch.revenue)}`:fmt(ch.revenue)}</span><span className="text-cyan-400 text-[10px] font-bold">ROAS {ch.roas}x</span></div>
+<div className="w-full bg-gray-700/30 rounded-full h-1 mt-1"><div className="h-1 rounded-full transition-all" style={{width:`${Math.min((typeof ch.roas==="number"?ch.roas:10)/10*100,100)}%`,background:ch.color}}></div></div>
+</div></div>)}
+</div></div>
+</div>
+</>}
+
+{/* AGENT VIEW */}
+{view==="agent"&&<div className="grid grid-cols-3 gap-4">
+<div className="lg:col-span-2 space-y-4">
+{/* Controls */}
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<div className="flex items-center gap-2 mb-4">
+<div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl flex items-center justify-center text-xl">{"\u{1F916}"}</div>
+<div><h3 className="text-white font-bold">Configuraci&oacute;n del Agente</h3><span className="text-emerald-400 text-[10px] font-bold">Semi-aut&oacute;nomo</span></div>
+</div>
+{[{k:"autonomy",l:"Autonom\u00EDa",ic:"\u{1F9E0}",d:"Cu\u00E1ntas decisiones toma solo"},{k:"creativity",l:"Creatividad",ic:"\u{1F3A8}",d:"Variaci\u00F3n en copy y creativos"},{k:"budget",l:"Libertad Budget",ic:"\u{1F4B0}",d:"% del presupuesto que puede mover"},{k:"speed",l:"Velocidad",ic:"\u26A1",d:"Qu\u00E9 tan r\u00E1pido ejecuta cambios"}].map(({k,l,ic,d})=><div key={k} className="mb-4">
+<div className="flex items-center justify-between mb-1"><div className="flex items-center gap-1.5"><span className="text-sm">{ic}</span><span className="text-white text-xs font-semibold">{l}</span></div><span className="text-violet-400 text-xs font-bold">{agent[k]}%</span></div>
+<input type="range" min="0" max="100" value={agent[k]} onChange={e=>setAgent({...agent,[k]:parseInt(e.target.value)})} className="w-full h-1.5 bg-gray-700 rounded-full"/>
+<span className="text-gray-600 text-[10px]">{d}</span>
+</div>)}
+</div>
+{/* Capabilities */}
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold mb-3">Capacidades del Agente</h3>
+<div className="space-y-1.5">
+{[{t:"Sync datos WooCommerce, Ads, Email, Social",on:true,a:true},{t:"Optimizar bids Meta + Google",on:true,a:true},{t:"Pausar campa\u00F1as con bajo ROAS",on:true,a:true},{t:"Enviar flows autom\u00E1ticos",on:true,a:true},{t:"Detectar anomal\u00EDas y alertar",on:true,a:true},{t:"Rastrear visitantes web",on:true,a:true},{t:"Generar copy con IA",on:true,a:false},{t:"Crear campa\u00F1as nuevas",on:true,a:false},{t:"Publicar en RRSS",on:true,a:false},{t:"Modificar budget >20%",on:false,a:false},{t:"Eliminar campa\u00F1as",on:false,a:false}].map((item,i)=><div key={i} className="flex items-center justify-between py-1.5 px-2 rounded bg-gray-800/30">
+<span className="text-gray-400 text-[10px]">{item.t}</span>
+<div className="flex items-center gap-2">
+{item.a?<span className="text-[9px] text-emerald-500/70 bg-emerald-500/10 px-1.5 rounded">auto</span>:item.on?<span className="text-[9px] text-amber-400/70 bg-amber-500/10 px-1.5 rounded">pide OK</span>:null}
+<div className={`w-7 h-3.5 rounded-full flex items-center px-0.5 cursor-pointer ${item.on?"bg-violet-600 justify-end":"bg-gray-700 justify-start"}`}><div className="w-2.5 h-2.5 bg-white rounded-full"></div></div>
+</div></div>)}
+</div></div>
+</div>
+<div className="space-y-4">
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold mb-3">Impacto del Agente &mdash; 30 d&iacute;as</h3>
+<div className="space-y-3">
+{[{m:"ROAS mejorado",b:"2.8x",a:"3.9x",d:"+39%"},{m:"CPA reducido",b:"$9,200",a:"$6,800",d:"-26%"},{m:"Revenue email",b:"$680K",a:"$1.15M",d:"+69%"},{m:"Carritos recuperados",b:"0",a:"95",d:"+$475K"},{m:"Tiempo manual",b:"20 hrs/sem",a:"4 hrs/sem",d:"-80%"},{m:"Posts/semana",b:"3-5",a:"10-12",d:"+150%"},{m:"Acciones ejecutadas",b:"",a:"347",d:"total"}].map((item,i)=><div key={i} className="flex items-center justify-between">
+<span className="text-gray-500 text-xs">{item.m}</span>
+<div className="flex items-center gap-2">{item.b&&<span className="text-gray-700 text-[10px] line-through">{item.b}</span>}<span className="text-white text-sm font-bold">{item.a}</span><span className="text-emerald-400 text-[10px] font-bold">{item.d}</span></div>
+</div>)}
+</div></div>
+<div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 rounded-xl p-4">
+<h4 className="text-violet-300 font-bold text-sm mb-2">ROI del Agente</h4>
+<div className="text-3xl font-black text-white mb-1">23.4x</div>
+<p className="text-gray-400 text-[10px]">Costo: ~$60-100 USD/mes<br/>Revenue generado: ~$2,300 USD/mes<br/>Se paga solo 23 veces.</p>
+</div></div>
+</div>}
+
+{/* VISITORS VIEW */}
+{view==="visitors"&&<>
+<div className="grid grid-cols-4 gap-3">
+<Stat label="Visitantes Hoy" value={1840} prev={1620} icon={"\u{1F441}"}/>
+<Stat label="En el sitio ahora" value={42} icon={"\u{1F7E2}"}/>
+<Stat label="Conversi\u00F3n" value={3.2} prev={2.4} format="pct" icon={"\u{1F4C8}"}/>
+<Stat label="Revenue/Visita" value={364} prev={310} format="money" icon={"\u{1F4B0}"}/>
+</div>
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<div className="flex items-center justify-between mb-4"><h3 className="text-white font-bold">Segmentos de Visitantes &mdash; Acciones del Agente</h3><span className="text-emerald-400 text-[10px] font-bold">Tracking 24/7</span></div>
+<div className="space-y-2.5">
+{visitorIntel.map((seg,i)=><div key={i} className="bg-gray-800/30 rounded-xl p-4 border border-gray-700/20">
+<div className="flex items-center justify-between mb-2">
+<div className="flex items-center gap-3"><div className="w-2.5 h-10 rounded-full" style={{background:seg.color}}></div><div><span className="text-white font-semibold text-sm">{seg.segment}</span><div className="flex items-center gap-2"><span className="text-gray-400 text-xs">{seg.count.toLocaleString()} usuarios</span><span className="text-gray-600 text-[10px]">({seg.pct}%)</span></div></div></div>
+<div className="w-32 bg-gray-700/30 rounded-full h-2"><div className="h-2 rounded-full" style={{width:`${Math.min(seg.pct*2,100)}%`,background:seg.color}}></div></div>
+</div>
+<div className="ml-6 pl-3 border-l-2 border-violet-500/30"><div className="flex items-center gap-2"><span className="text-violet-400 text-[10px] font-bold">AGENTE IA {"\u2192"}</span><span className="text-gray-300 text-xs">{seg.action}</span></div></div>
+</div>)}
+</div></div>
+</>}
+
+{/* CHANNELS VIEW */}
+{view==="channels"&&<>
+<div className="space-y-3">
+{channels.map((ch,i)=><div key={i} className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-4 hover:border-gray-700/50 transition-all">
+<div className="flex items-center gap-4">
+<div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{background:`${ch.color}15`,border:`1px solid ${ch.color}30`}}>{ch.icon}</div>
+<div className="flex-1">
+<div className="flex items-center gap-3 mb-1"><span className="text-white font-bold">{ch.name}</span><Badge status={ch.status==="optimizing"?"working":"done"}/><span className="text-emerald-400 text-xs font-bold">{ch.trend}</span></div>
+<div className="flex items-center gap-6">
+{ch.spend>0&&<span className="text-gray-500 text-xs">Gasto: <span className="text-gray-300 font-medium">{fmt(ch.spend)}</span></span>}
+<span className="text-gray-500 text-xs">Revenue: <span className="text-emerald-400 font-bold">{fmt(ch.revenue)}</span></span>
+<span className="text-gray-500 text-xs">ROAS: <span className="text-cyan-400 font-bold">{ch.roas}x</span></span>
+<span className="text-gray-500 text-xs">Leads: <span className="text-violet-400 font-medium">{ch.leads}</span></span>
+</div></div>
+<div className="text-right"><div className="text-white font-bold text-lg">{fmt(ch.revenue)}</div><div className="text-gray-600 text-[10px]">revenue</div></div>
+</div></div>)}
+</div>
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold text-sm mb-4">ROAS por Canal</h3>
+<ResponsiveContainer width="100%" height={250}>
+<BarChart data={channels.filter(c=>typeof c.roas==="number")} layout="vertical">
+<CartesianGrid strokeDasharray="3 3" stroke="#1a1b2e" horizontal={false}/>
+<XAxis type="number" stroke="#4b5563" fontSize={10}/>
+<YAxis type="category" dataKey="name" stroke="#4b5563" fontSize={11} width={100}/>
+<Tooltip contentStyle={{background:"#111827",border:"1px solid #1f2937",borderRadius:"10px"}}/>
+<Bar dataKey="roas" name="ROAS" radius={[0,6,6,0]}>{channels.filter(c=>typeof c.roas==="number").map((e,i)=><Cell key={i} fill={e.color}/>)}</Bar>
+</BarChart></ResponsiveContainer></div>
+</>}
+
+{/* CAMPAIGNS */}
+{view==="campaigns"&&<div className="space-y-4">
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold mb-3">Objetivo: {campaignGoals[goal].icon} {campaignGoals[goal].goal}</h3>
+<p className="text-gray-400 text-sm mb-4">{campaignGoals[goal].desc}</p>
+<div className="grid grid-cols-4 gap-2">
+{campaignGoals.map((g,i)=><button key={i} onClick={()=>setGoal(i)} className={`p-3 rounded-xl border text-center transition-all ${goal===i?"bg-violet-500/15 border-violet-500/40":"bg-gray-800/30 border-gray-700/30 hover:border-gray-600/50"}`}>
+<span className="text-xl">{g.icon}</span><div className={`text-xs font-bold mt-1 ${goal===i?"text-violet-300":"text-gray-500"}`}>{g.goal}</div></button>)}
+</div></div>
+<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5"><p className="text-gray-300 text-sm">Cuando cambias el objetivo, el agente autom&aacute;ticamente ajusta: estrategias de bidding en Meta y Google, tipo de contenido, segmentos de email, y m&eacute;tricas que optimiza. Todo se reconfigura con un click.</p></div>
+</div>}
+
+{/* CONTENT */}
+{view==="content"&&<div className="bg-gray-900/40 border border-gray-800/50 rounded-xl p-5">
+<h3 className="text-white font-bold mb-4">Calendario de Contenido &mdash; Generado por Agente IA</h3>
+<div className="grid grid-cols-7 gap-2">
+{["Lun","Mar","Mi\u00E9","Jue","Vie","S\u00E1b","Dom"].map(d=><div key={d} className="text-center text-gray-600 text-[10px] font-bold uppercase pb-2">{d}</div>)}
+{[{day:24,c:"Carousel: Tips riego",p:"IG",s:"published"},{day:25,c:"Reel: Tutorial fertilizaci\u00F3n",p:"IG+FB",s:"scheduled"},{day:26,c:"Post: Promo semillas",p:"FB",s:"draft"},{day:27,c:"Story: Behind the scenes",p:"IG",s:"draft"},{day:28,c:"Video: Unboxing kit riego",p:"TikTok",s:"idea"},{day:29,c:"Carousel: Gu\u00EDa de poda",p:"IG",s:"idea"},{day:30,c:"Post: Testimonio cliente",p:"FB+IG",s:"idea"}].map((item,i)=>{
+const sc={published:"border-emerald-500/40 bg-emerald-500/10",scheduled:"border-blue-500/40 bg-blue-500/10",draft:"border-amber-500/30 bg-amber-500/5",idea:"border-gray-700/40 bg-gray-800/30"};
+return <div key={i} className={`border rounded-lg p-2.5 ${sc[item.s]} min-h-[80px]`}><div className="text-white text-xs font-bold mb-1">{item.day}</div><div className="text-gray-300 text-[10px] leading-tight mb-1">{item.c}</div><div className="text-gray-500 text-[9px]">{item.p}</div></div>})}
+</div>
+<div className="flex items-center gap-4 mt-3">
+{[{l:"Publicado",c:"bg-emerald-500/40"},{l:"Programado",c:"bg-blue-500/40"},{l:"Borrador",c:"bg-amber-500/30"},{l:"Idea IA",c:"bg-gray-700/40"}].map((s,i)=><div key={i} className="flex items-center gap-1.5"><span className={`w-2.5 h-2.5 rounded ${s.c}`}></span><span className="text-gray-500 text-[10px]">{s.l}</span></div>)}
+</div></div>}
+
+</div></main></div>)}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
