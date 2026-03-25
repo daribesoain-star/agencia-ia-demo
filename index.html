@@ -560,9 +560,9 @@ function AdminPanel({currentUser, userData, onBack}) {
 // DASHBOARD DATA (same as original)
 // ============================================
 const empresas=[
-{id:1,name:"Agrocomercial",domain:"agrocomercial.cl",logo:"\u{1F33F}",industry:"Agro/Retail",plan:"Pro",agentStatus:"working",connections:7},
-{id:2,name:"Factur-AI",domain:"factur-ai.cl",logo:"\u{1F4C4}",industry:"SaaS/Fintech",plan:"Pro",agentStatus:"working",connections:5},
-{id:3,name:"Cliente Demo",domain:"demo-tienda.cl",logo:"\u{1F6CD}",industry:"E-commerce",plan:"Starter",agentStatus:"configuring",connections:3}
+{id:1,name:"Agrocomercial",domain:"agrocomercial.cl",logo:"🌿",industry:"Agro/Retail",plan:"Pro",agentStatus:"working",connections:7},
+{id:2,name:"Factur-AI",domain:"factur-ai.cl",logo:"📄",industry:"SaaS/Fintech",plan:"Pro",agentStatus:"working",connections:5},
+{id:3,name:"Cliente Demo",domain:"demo-tienda.cl",logo:"🛍",industry:"E-commerce",plan:"Starter",agentStatus:"configuring",connections:3}
 ];
 
 const kpis={
@@ -586,31 +586,31 @@ const revenueTimeline=[
 ];
 
 const channels=[
-{name:"Meta Ads",icon:"\u{1F4D8}",spend:520000,revenue:2080000,roas:4.0,status:"optimizing",trend:"+12%",leads:145,color:"#1877F2"},
-{name:"Google Ads",icon:"\u{1F50D}",spend:420000,revenue:1890000,roas:4.5,status:"scaling",trend:"+18%",leads:210,color:"#4285F4"},
-{name:"Instagram",icon:"\u{1F4F7}",spend:180000,revenue:540000,roas:3.0,status:"creating",trend:"+8%",leads:68,color:"#E4405F"},
-{name:"Mailchimp",icon:"\u{1F4E7}",spend:15000,revenue:1150000,roas:76.7,status:"automating",trend:"+62%",leads:95,color:"#FFE01B"},
-{name:"WooCommerce",icon:"\u{1F6D2}",spend:0,revenue:3200000,roas:"\u221E",status:"tracking",trend:"+15%",leads:342,color:"#96588A"},
-{name:"TikTok",icon:"\u{1F3B5}",spend:130000,revenue:390000,roas:3.0,status:"testing",trend:"+25%",leads:42,color:"#000"},
-{name:"MercadoLibre",icon:"\u{1F7E1}",spend:0,revenue:480000,roas:"\u221E",status:"listing",trend:"+5%",leads:28,color:"#FFE600"}
+{name:"Meta Ads",icon:"📘",spend:520000,revenue:2080000,roas:4.0,status:"optimizing",trend:"+12%",leads:145,color:"#1877F2"},
+{name:"Google Ads",icon:"🔍",spend:420000,revenue:1890000,roas:4.5,status:"scaling",trend:"+18%",leads:210,color:"#4285F4"},
+{name:"Instagram",icon:"📷",spend:180000,revenue:540000,roas:3.0,status:"creating",trend:"+8%",leads:68,color:"#E4405F"},
+{name:"Mailchimp",icon:"📧",spend:15000,revenue:1150000,roas:76.7,status:"automating",trend:"+62%",leads:95,color:"#FFE01B"},
+{name:"WooCommerce",icon:"🛒",spend:0,revenue:3200000,roas:"\u221E",status:"tracking",trend:"+15%",leads:342,color:"#96588A"},
+{name:"TikTok",icon:"🎵",spend:130000,revenue:390000,roas:3.0,status:"testing",trend:"+25%",leads:42,color:"#000"},
+{name:"MercadoLibre",icon:"🟡",spend:0,revenue:480000,roas:"\u221E",status:"listing",trend:"+5%",leads:28,color:"#FFE600"}
 ];
 
 const agentActivity=[
 {time:"Ahora",icon:"\u26A1",action:"Redistribuyendo $85K de campa\u00F1a baja \u2192 Riego Tecnificado (ROAS 4.5x)",status:"executing",impact:"+$120K revenue est."},
-{time:"14:32",icon:"\u{1F3A8}",action:"Gener\u00F3 4 variantes de ad para Fertilizante Premium \u2014 A/B test en Meta",status:"done",impact:"Testing 4 creativos"},
-{time:"13:45",icon:"\u{1F441}",action:"23 visitantes viendo Kit Riego sin comprar \u2014 activ\u00F3 retargeting",status:"done",impact:"23 en remarketing"},
+{time:"14:32",icon:"🎨",action:"Gener\u00F3 4 variantes de ad para Fertilizante Premium \u2014 A/B test en Meta",status:"done",impact:"Testing 4 creativos"},
+{time:"13:45",icon:"👁",action:"23 visitantes viendo Kit Riego sin comprar \u2014 activ\u00F3 retargeting",status:"done",impact:"23 en remarketing"},
 {time:"13:15",icon:"\u26A1",action:"Cre\u00F3 audiencia Lookalike 1% basada en top 200 compradores Q1",status:"pending",impact:"~180K personas"},
-{time:"12:48",icon:"\u{1F4E7}",action:"Envi\u00F3 flow carrito abandonado a 23 usuarios",status:"done",impact:"Revenue esp: $247K"},
-{time:"12:00",icon:"\u{1F4F1}",action:"Public\u00F3 carousel Tips de riego oto\u00F1o en IG",status:"done",impact:"Alcance: 4,500"},
+{time:"12:48",icon:"📧",action:"Envi\u00F3 flow carrito abandonado a 23 usuarios",status:"done",impact:"Revenue esp: $247K"},
+{time:"12:00",icon:"📱",action:"Public\u00F3 carousel Tips de riego oto\u00F1o en IG",status:"done",impact:"Alcance: 4,500"},
 {time:"11:30",icon:"\u26A1",action:"Paus\u00F3 ad set Herramientas Jard\u00EDn \u2014 CPA $1,200 > umbral $800",status:"done",impact:"Ahorro: $45K/sem"},
-{time:"09:00",icon:"\u{1F4CB}",action:"Reporte diario WhatsApp: Revenue $650K | ROAS 3.9x | 18 pedidos",status:"done",impact:"Reporte entregado"}
+{time:"09:00",icon:"📋",action:"Reporte diario WhatsApp: Revenue $650K | ROAS 3.9x | 18 pedidos",status:"done",impact:"Reporte entregado"}
 ];
 
 const campaignGoals=[
-{goal:"M\u00E1s Ventas",icon:"\u{1F4B0}",desc:"Maximizar ROAS y conversiones",kpi:"ROAS 3.9x \u2192 4.5x",ch:["Meta Ads","Google Ads","Email"]},
-{goal:"M\u00E1s Mensajes",icon:"\u{1F4AC}",desc:"Generar leads via WhatsApp y DMs",kpi:"42 msgs/d\u00EDa",ch:["Meta Ads","Instagram","WhatsApp"]},
-{goal:"M\u00E1s Exposici\u00F3n",icon:"\u{1F441}",desc:"Maximizar alcance y brand awareness",kpi:"145K reach/mes",ch:["TikTok","Instagram","YouTube"]},
-{goal:"M\u00E1s Tr\u00E1fico",icon:"\u{1F310}",desc:"Visitantes calificados al sitio web",kpi:"28.4K visitas/mes",ch:["Google Ads","SEO","Social"]}
+{goal:"M\u00E1s Ventas",icon:"💰",desc:"Maximizar ROAS y conversiones",kpi:"ROAS 3.9x \u2192 4.5x",ch:["Meta Ads","Google Ads","Email"]},
+{goal:"M\u00E1s Mensajes",icon:"💬",desc:"Generar leads via WhatsApp y DMs",kpi:"42 msgs/d\u00EDa",ch:["Meta Ads","Instagram","WhatsApp"]},
+{goal:"M\u00E1s Exposici\u00F3n",icon:"👁",desc:"Maximizar alcance y brand awareness",kpi:"145K reach/mes",ch:["TikTok","Instagram","YouTube"]},
+{goal:"M\u00E1s Tr\u00E1fico",icon:"🌐",desc:"Visitantes calificados al sitio web",kpi:"28.4K visitas/mes",ch:["Google Ads","SEO","Social"]}
 ];
 
 const perfRadar=[
@@ -644,15 +644,15 @@ function Dashboard({user, userData, onLogout, onAdmin}) {
   const [agentAutonomy,setAgentAutonomy]=useState(85);
 
   const views=[
-    {id:"dashboard",label:"Dashboard",icon:"\u{1F4CA}"},
-    {id:"agent",label:"Agente IA",icon:"\u{1F916}"},
-    {id:"channels",label:"Canales",icon:"\u{1F4E1}"},
-    {id:"visitors",label:"Visitantes",icon:"\u{1F465}"},
-    {id:"campaigns",label:"Campa\u00F1as",icon:"\u{1F3AF}"},
-    {id:"content",label:"Contenido",icon:"\u{1F4DD}"}
+    {id:"dashboard",label:"Dashboard",icon:"📊"},
+    {id:"agent",label:"Agente IA",icon:"🤖"},
+    {id:"channels",label:"Canales",icon:"📡"},
+    {id:"visitors",label:"Visitantes",icon:"👥"},
+    {id:"campaigns",label:"Campa\u00F1as",icon:"🎯"},
+    {id:"content",label:"Contenido",icon:"📝"}
   ];
 
-  const channelIcons = ["\u{1F4CA}","\u{1F4F1}","\u{1F50D}","\u{1F4E7}","\u{1F6D2}","\u{1F3B5}","\u{1F7E1}"];
+  const channelIcons = ["📊","📱","🔍","📧","🛒","🎵","🟡"];
 
   return (
     <div className="flex h-screen bg-[#0a0b0f] text-white overflow-hidden">
@@ -761,18 +761,18 @@ function Dashboard({user, userData, onLogout, onAdmin}) {
 
               {/* KPI Grid */}
               <div className="grid grid-cols-5 gap-3 mb-6">
-                <Stat label="Revenue Total" value={kpis.revenue.value} prev={kpis.revenue.prev} format="money" icon="\u{1F4B0}"/>
-                <Stat label="ROAS Promedio" value={kpis.roas.value} prev={kpis.roas.prev} format="x" icon="\u{1F4C8}"/>
-                <Stat label="Pedidos" value={kpis.orders.value} prev={kpis.orders.prev} icon="\u{1F4E6}"/>
-                <Stat label="Visitantes Web" value={kpis.visitors.value} prev={kpis.visitors.prev} icon="\u{1F310}"/>
-                <Stat label="Conversi\u00F3n" value={kpis.convRate.value} prev={kpis.convRate.prev} format="pct" icon="\u{1F4CA}"/>
+                <Stat label="Revenue Total" value={kpis.revenue.value} prev={kpis.revenue.prev} format="money" icon="💰"/>
+                <Stat label="ROAS Promedio" value={kpis.roas.value} prev={kpis.roas.prev} format="x" icon="📈"/>
+                <Stat label="Pedidos" value={kpis.orders.value} prev={kpis.orders.prev} icon="📦"/>
+                <Stat label="Visitantes Web" value={kpis.visitors.value} prev={kpis.visitors.prev} icon="🌐"/>
+                <Stat label="Conversi\u00F3n" value={kpis.convRate.value} prev={kpis.convRate.prev} format="pct" icon="📊"/>
               </div>
               <div className="grid grid-cols-5 gap-3 mb-6">
-                <Stat label="Gasto Ads" value={kpis.adSpend.value} prev={kpis.adSpend.prev} format="money" icon="\u{1F4B8}"/>
-                <Stat label="CAC" value={kpis.cac.value} prev={kpis.cac.prev} format="money" icon="\u{1F4B2}"/>
-                <Stat label="LTV Cliente" value={kpis.ltv.value} prev={kpis.ltv.prev} format="money" icon="\u{1F48E}"/>
-                <Stat label="Revenue Email" value={kpis.emailRevenue.value} prev={kpis.emailRevenue.prev} format="money" icon="\u{1F4E7}"/>
-                <Stat label="Alcance Social" value={kpis.socialReach.value} prev={kpis.socialReach.prev} icon="\u{1F4F1}"/>
+                <Stat label="Gasto Ads" value={kpis.adSpend.value} prev={kpis.adSpend.prev} format="money" icon="💸"/>
+                <Stat label="CAC" value={kpis.cac.value} prev={kpis.cac.prev} format="money" icon="💲"/>
+                <Stat label="LTV Cliente" value={kpis.ltv.value} prev={kpis.ltv.prev} format="money" icon="💎"/>
+                <Stat label="Revenue Email" value={kpis.emailRevenue.value} prev={kpis.emailRevenue.prev} format="money" icon="📧"/>
+                <Stat label="Alcance Social" value={kpis.socialReach.value} prev={kpis.socialReach.prev} icon="📱"/>
               </div>
 
               {/* Charts */}
@@ -821,7 +821,7 @@ function Dashboard({user, userData, onLogout, onAdmin}) {
                   </div>
                 </div>
                 <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
-                  <h3 className="font-semibold mb-4">\u{1F4CA} M\u00E9tricas del Agente Hoy</h3>
+                  <h3 className="font-semibold mb-4">📊 M\u00E9tricas del Agente Hoy</h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-gray-800/40 rounded-lg p-3"><div className="text-gray-400 text-xs">Acciones</div><div className="text-xl font-bold text-white">23</div></div>
                     <div className="bg-gray-800/40 rounded-lg p-3"><div className="text-gray-400 text-xs">Revenue generado</div><div className="text-xl font-bold text-green-400">$650K</div></div>
@@ -831,7 +831,7 @@ function Dashboard({user, userData, onLogout, onAdmin}) {
                 </div>
               </div>
               <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
-                <h3 className="font-semibold mb-4">\u{1F4CB} Actividad del Agente</h3>
+                <h3 className="font-semibold mb-4">📋 Actividad del Agente</h3>
                 <div className="space-y-3">
                   {agentActivity.map((a,i)=>(
                     <div key={i} className={`flex gap-3 p-3 rounded-lg ${a.status==='executing'?'bg-violet-600/10 border border-violet-500/30':'bg-gray-800/30'}`}>
