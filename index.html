@@ -550,6 +550,271 @@ function AdminPanel({currentUser, userData, onBack}) {
               </table>
             </div>
           )}
+
+          {/* Roadmap View */}
+          {activeView === "roadmap" && (
+            <div className="space-y-6">
+              {/* Hero */}
+              <div className="text-center py-8 bg-gradient-to-br from-[#0a0b0f] via-[#1a1040] to-[#0f172a] rounded-2xl border border-violet-500/10">
+                <h2 className="text-3xl font-extrabold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Roadmap Estratégico 2026</h2>
+                <p className="text-gray-400 mt-2">Análisis con Marketing OS + Web Dev + Financial + Cybersecurity</p>
+                <p className="text-gray-600 text-xs mt-2">Generado: 25 Marzo 2026 | Dari Besoain</p>
+              </div>
+
+              {/* Diagnóstico */}
+              <div>
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">1</span> Diagnóstico: Dónde Estás Hoy</h3>
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 text-center"><div className="text-2xl font-extrabold text-violet-400">1</div><div className="text-xs text-gray-500">Demo live en Vercel</div></div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 text-center"><div className="text-2xl font-extrabold text-cyan-400">0</div><div className="text-xs text-gray-500">Funcionalidades reales</div></div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 text-center"><div className="text-2xl font-extrabold text-green-400">0</div><div className="text-xs text-gray-500">Clientes pagando</div></div>
+                </div>
+                <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 mb-2">
+                  <h4 className="font-semibold text-sm mb-1">Lo que tienes</h4>
+                  <p className="text-gray-400 text-sm">Login con Firebase Auth (email + Google), roles (admin/cliente/vendedor/soporte), dashboard con datos dummy, protecciones anti-copia, dominio en Vercel, monitoreo de seguridad automático cada 6 horas.</p>
+                </div>
+                <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                  <h4 className="font-semibold text-sm mb-1">Lo que NO tienes (y necesitas para cobrar)</h4>
+                  <p className="text-gray-400 text-sm">Ningún módulo funcional real — el dashboard muestra datos estáticos. No hay conexión a APIs de Meta, Google, o WhatsApp. No hay sistema de pagos. No hay onboarding de clientes. No hay automatizaciones reales.</p>
+                </div>
+              </div>
+
+              {/* Veredicto Estratégico */}
+              <div>
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">2</span> Veredicto Estratégico</h3>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-2"><h4 className="font-semibold text-sm">Marketing OS dice:</h4><span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">Crítico</span></div>
+                    <p className="text-gray-400 text-xs">NO construyas la plataforma completa. Tu ventaja NO es la herramienta — es el SERVICIO con IA. Vende primero, construye después.</p>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-2"><h4 className="font-semibold text-sm">Web Dev dice:</h4><span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Alto</span></div>
+                    <p className="text-gray-400 text-xs">Construir un SaaS completo toma 6-12 meses. La ruta es: MVP enfocado en 1 módulo killer, no plataforma all-in-one.</p>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-2"><h4 className="font-semibold text-sm">Financial dice:</h4><span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">Crítico</span></div>
+                    <p className="text-gray-400 text-xs">Si necesitas ingresos YA, cada mes sin cobrar es cash burn. Vende servicios de marketing con IA como agencia usando tu plataforma como interfaz.</p>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-2"><h4 className="font-semibold text-sm">Cybersecurity dice:</h4><span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">OK</span></div>
+                    <p className="text-gray-400 text-xs">Infraestructura de seguridad sólida para MVP: Firebase Auth, API key restringida, monitoreo automático.</p>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#1a1040] to-[#0f172a] border border-violet-500/20 rounded-xl p-5">
+                  <h4 className="font-bold mb-2">La Decisión: Modelo Híbrido "Agencia IA"</h4>
+                  <p className="text-violet-400 font-semibold text-sm mb-2">Agencia de marketing potenciada por IA + Dashboard del cliente para transparencia = Servicio premium con precio de agencia pero costos de IA.</p>
+                  <p className="text-gray-400 text-xs">Tu dashboard se convierte en el "portal del cliente" donde ven sus resultados en tiempo real. Tú operas por detrás con IA y cobras mensualidad. Márgenes de 60-80%.</p>
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div>
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">3</span> Modelo de Negocio y Pricing</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5 text-center">
+                    <h4 className="font-semibold text-sm">Starter</h4>
+                    <div className="text-xs text-gray-500">CLP</div>
+                    <div className="text-2xl font-extrabold text-violet-400 my-2">149.990<span className="text-sm text-gray-500 font-normal">/mes</span></div>
+                    <p className="text-gray-500 text-xs mb-3">~$155 USD | PYMEs chicas</p>
+                    <div className="text-left space-y-1 text-xs text-gray-400">
+                      <div>✓ Gestión de 2 redes sociales</div>
+                      <div>✓ 12 posts/mes con IA</div>
+                      <div>✓ Dashboard métricas básico</div>
+                      <div>✓ Reporte mensual automatizado</div>
+                      <div>✓ Soporte por WhatsApp</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-900/60 border-2 border-violet-500/50 rounded-xl p-5 text-center scale-105 shadow-lg shadow-violet-500/10">
+                    <h4 className="font-semibold text-sm">Professional</h4>
+                    <div className="text-xs text-gray-500">CLP</div>
+                    <div className="text-2xl font-extrabold text-violet-400 my-2">349.990<span className="text-sm text-gray-500 font-normal">/mes</span></div>
+                    <p className="text-gray-500 text-xs mb-3">~$365 USD | PYMEs medianas</p>
+                    <div className="text-left space-y-1 text-xs text-gray-400">
+                      <div>✓ 4 redes sociales</div>
+                      <div>✓ 30 posts/mes con IA</div>
+                      <div>✓ Meta + Google Ads</div>
+                      <div>✓ Email marketing (4 camp/mes)</div>
+                      <div>✓ Dashboard en tiempo real</div>
+                      <div>✓ Reportes semanales</div>
+                      <div>✓ Optimización de ads con IA</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5 text-center">
+                    <h4 className="font-semibold text-sm">Enterprise</h4>
+                    <div className="text-xs text-gray-500">CLP</div>
+                    <div className="text-2xl font-extrabold text-violet-400 my-2">799.990<span className="text-sm text-gray-500 font-normal">/mes</span></div>
+                    <p className="text-gray-500 text-xs mb-3">~$830 USD | Empresas medianas</p>
+                    <div className="text-left space-y-1 text-xs text-gray-400">
+                      <div>✓ Todo el plan Professional</div>
+                      <div>✓ WhatsApp Business auto</div>
+                      <div>✓ SEO + blog con IA</div>
+                      <div>✓ Landing pages ilimitadas</div>
+                      <div>✓ CRM y lead scoring</div>
+                      <div>✓ Estrategia mensual 1:1</div>
+                      <div>✓ Soporte prioritario</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Proyección Financiera */}
+              <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
+                <h4 className="font-semibold mb-3">Proyección Financiera (Escenario Conservador)</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-gray-800/60 text-gray-400 text-xs">
+                      <th className="text-left p-2">Mes</th><th className="text-left p-2">Starter</th><th className="text-left p-2">Pro</th><th className="text-left p-2">Enterprise</th><th className="text-left p-2">MRR (CLP)</th><th className="text-left p-2">MRR (USD)</th>
+                    </tr></thead>
+                    <tbody className="text-gray-300 text-xs">
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Mes 1-2</td><td className="p-2">2</td><td className="p-2">1</td><td className="p-2">0</td><td className="p-2 text-violet-400">$649.970</td><td className="p-2">~$675</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Mes 3-4</td><td className="p-2">4</td><td className="p-2">2</td><td className="p-2">1</td><td className="p-2 text-violet-400">$2.099.930</td><td className="p-2">~$2,185</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Mes 6</td><td className="p-2">6</td><td className="p-2">4</td><td className="p-2">2</td><td className="p-2 text-violet-400">$3.899.900</td><td className="p-2">~$4,060</td></tr>
+                      <tr><td className="p-2">Mes 12</td><td className="p-2">10</td><td className="p-2">8</td><td className="p-2">3</td><td className="p-2 text-violet-400 font-bold">$6.699.870</td><td className="p-2 font-bold">~$6,980</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-gray-600 text-xs mt-2">Costo operativo: ~$200 USD/mes. Margen bruto: 70-85%.</p>
+              </div>
+
+              {/* Roadmap 4 Fases */}
+              <div>
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">4</span> Roadmap: Qué Construir y En Qué Orden</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 border-l-4 border-l-red-500">
+                    <h4 className="font-bold text-sm">FASE 1: Vendible</h4><p className="text-xs text-gray-500 mb-2">Semana 1-2 | Prioridad MÁXIMA</p>
+                    <div className="space-y-1 text-xs text-gray-400">
+                      <div>→ Dashboard con datos REALES (no dummy)</div>
+                      <div>→ Integración Meta Ads API</div>
+                      <div>→ Integración Google Analytics</div>
+                      <div>→ Reportes automáticos PDF</div>
+                      <div>→ Panel admin multi-cliente</div>
+                      <div>→ Landing page de venta</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 border-l-4 border-l-yellow-500">
+                    <h4 className="font-bold text-sm">FASE 2: Automatizable</h4><p className="text-xs text-gray-500 mb-2">Semana 3-4 | Prioridad ALTA</p>
+                    <div className="space-y-1 text-xs text-gray-400">
+                      <div>→ Generador de contenido con IA</div>
+                      <div>→ Programador de publicaciones</div>
+                      <div>→ Templates de ads pre-configuradas</div>
+                      <div>→ WhatsApp Business API</div>
+                      <div>→ Email marketing (Brevo)</div>
+                      <div>→ Facturación (Stripe/MercadoPago)</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 border-l-4 border-l-violet-500">
+                    <h4 className="font-bold text-sm">FASE 3: Escalable</h4><p className="text-xs text-gray-500 mb-2">Mes 2-3 | Prioridad MEDIA</p>
+                    <div className="space-y-1 text-xs text-gray-400">
+                      <div>→ IA optimiza campañas automáticamente</div>
+                      <div>→ Lead scoring con IA</div>
+                      <div>→ Chatbot WhatsApp con IA</div>
+                      <div>→ A/B testing automatizado</div>
+                      <div>→ Onboarding self-service</div>
+                      <div>→ Roles de equipo</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 border-l-4 border-l-green-500">
+                    <h4 className="font-bold text-sm">FASE 4: SaaS Puro</h4><p className="text-xs text-gray-500 mb-2">Mes 4-6 | Prioridad BAJA (por ahora)</p>
+                    <div className="space-y-1 text-xs text-gray-400">
+                      <div>→ Modo self-service completo</div>
+                      <div>→ Marketplace de templates</div>
+                      <div>→ API pública</div>
+                      <div>→ White-label para agencias</div>
+                      <div>→ App móvil (PWA)</div>
+                      <div>→ Multi-idioma LATAM</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5 Pasos Inmediatos */}
+              <div>
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">5</span> Los 5 Pasos Inmediatos</h3>
+                <div className="space-y-2">
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 flex justify-between items-center">
+                    <div><h4 className="font-semibold text-sm">Paso 1: Landing Page de Venta</h4><p className="text-gray-400 text-xs">Crear landing profesional con pricing, beneficios, formulario y WhatsApp.</p></div>
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex-shrink-0">Hoy</span>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 flex justify-between items-center">
+                    <div><h4 className="font-semibold text-sm">Paso 2: Conectar datos reales al dashboard</h4><p className="text-gray-400 text-xs">Meta Ads API + Google Analytics. Datos reales = justificación para cobrar.</p></div>
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex-shrink-0">Día 2-3</span>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 flex justify-between items-center">
+                    <div><h4 className="font-semibold text-sm">Paso 3: Sistema de reportes PDF</h4><p className="text-gray-400 text-xs">Reportes automáticos semanales/mensuales. Diferenciador vs agencias tradicionales.</p></div>
+                    <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 flex-shrink-0">Día 4-5</span>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 flex justify-between items-center">
+                    <div><h4 className="font-semibold text-sm">Paso 4: Conseguir 1er cliente piloto</h4><p className="text-gray-400 text-xs">Ofrecer gratis o con descuento a 1-2 negocios cercanos. Caso de éxito real.</p></div>
+                    <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 flex-shrink-0">Semana 1</span>
+                  </div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 flex justify-between items-center">
+                    <div><h4 className="font-semibold text-sm">Paso 5: Activar captación</h4><p className="text-gray-400 text-xs">IG + LinkedIn mostrando resultados del piloto. Meta: 3-5 clientes en el primer mes.</p></div>
+                    <span className="text-xs px-2 py-1 rounded-full bg-violet-500/20 text-violet-400 border border-violet-500/30 flex-shrink-0">Semana 2</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stack Técnico */}
+              <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">6</span> Stack Técnico Recomendado</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-gray-800/60 text-gray-400 text-xs">
+                      <th className="text-left p-2">Componente</th><th className="text-left p-2">Herramienta</th><th className="text-left p-2">Costo</th><th className="text-left p-2">Por qué</th>
+                    </tr></thead>
+                    <tbody className="text-gray-300 text-xs">
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Frontend</td><td className="p-2">React + Vercel</td><td className="p-2 text-green-400">Gratis</td><td className="p-2">Ya lo tienes</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Auth + DB</td><td className="p-2">Firebase</td><td className="p-2 text-green-400">Gratis</td><td className="p-2">Ya configurado</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Ads Data</td><td className="p-2">Meta + Google APIs</td><td className="p-2 text-green-400">Gratis</td><td className="p-2">Datos reales</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Email + WhatsApp</td><td className="p-2">Brevo API</td><td className="p-2 text-green-400">Gratis (300/día)</td><td className="p-2">Todo en uno</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">IA</td><td className="p-2">Claude API</td><td className="p-2 text-yellow-400">~$20-50/mes</td><td className="p-2">Copys, posts, estrategia</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Pagos</td><td className="p-2">Stripe / MercadoPago</td><td className="p-2 text-gray-500">Comisión</td><td className="p-2">Suscripciones</td></tr>
+                      <tr><td className="p-2">Monitoreo</td><td className="p-2">Tarea programada</td><td className="p-2 text-green-400">Gratis</td><td className="p-2">Seguridad 6h</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-gray-600 text-xs mt-2 text-center font-semibold">Costo total estimado: $50-150 USD/mes</p>
+              </div>
+
+              {/* Competencia */}
+              <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">7</span> Competencia y Diferenciadores</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-gray-800/60 text-gray-400 text-xs">
+                      <th className="text-left p-2">Competidor</th><th className="text-left p-2">Precio</th><th className="text-left p-2">Debilidad</th><th className="text-left p-2">Tu Ventaja</th>
+                    </tr></thead>
+                    <tbody className="text-gray-300 text-xs">
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Agencia tradicional</td><td className="p-2">$500K-2M CLP/mes</td><td className="p-2">Lenta, cara</td><td className="p-2 text-green-400">3x más barato, IA</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">Freelancer</td><td className="p-2">$200K-500K CLP/mes</td><td className="p-2">Sin plataforma</td><td className="p-2 text-green-400">Dashboard pro</td></tr>
+                      <tr className="border-b border-gray-800/30"><td className="p-2">GoHighLevel</td><td className="p-2">$97-497 USD/mes</td><td className="p-2">En inglés, DIY</td><td className="p-2 text-green-400">Español + servicio</td></tr>
+                      <tr><td className="p-2">HubSpot</td><td className="p-2">$800+ USD/mes</td><td className="p-2">Carísimo</td><td className="p-2 text-green-400">10x más barato</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-4 bg-gradient-to-br from-[#1a1040] to-[#0f172a] border border-violet-500/20 rounded-xl p-4 text-center">
+                  <h4 className="font-bold text-sm mb-1">Tu Propuesta de Valor</h4>
+                  <p className="text-violet-400 font-semibold text-sm">"Marketing digital profesional potenciado por IA, con dashboard en tiempo real, por una fracción de lo que cobra una agencia tradicional."</p>
+                </div>
+              </div>
+
+              {/* Métricas */}
+              <div>
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2"><span className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-700 rounded-lg flex items-center justify-center text-xs font-bold">8</span> Métricas Clave</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 text-center"><div className="text-xl font-extrabold text-violet-400">LTV:CAC</div><div className="text-xs text-gray-500 mt-1">Ratio mínima 3:1</div></div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 text-center"><div className="text-xl font-extrabold text-cyan-400">MRR</div><div className="text-xs text-gray-500 mt-1">Tu norte principal</div></div>
+                  <div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-4 text-center"><div className="text-xl font-extrabold text-green-400">Churn</div><div className="text-xs text-gray-500 mt-1">Meta: {"<"} 5% mensual</div></div>
+                </div>
+              </div>
+
+              <div className="text-center py-4 text-gray-600 text-xs border-t border-gray-800/40 mt-4">
+                Análisis generado con: Marketing OS + Web Monetization Dev + Financial Erudite + Cybersecurity Erudite + God Mode Efficiency<br/>
+                Agencia IA — Dari Besoain | Marzo 2026
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
@@ -649,7 +914,8 @@ function Dashboard({user, userData, onLogout, onAdmin}) {
     {id:"channels",label:"Canales",icon:"📡"},
     {id:"visitors",label:"Visitantes",icon:"👥"},
     {id:"campaigns",label:"Campa\u00F1as",icon:"🎯"},
-    {id:"content",label:"Contenido",icon:"📝"}
+    {id:"content",label:"Contenido",icon:"📝"},
+    {id:"roadmap",label:"Roadmap",icon:"🗺️"}
   ];
 
   const channelIcons = ["📊","📱","🔍","📧","🛒","🎵","🟡"];
